@@ -1,0 +1,13 @@
+package app.bluefig;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class BluefigApplicationTests {
+
+	@Test
+	void contextLoads() {
+	}
+
+}

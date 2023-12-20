@@ -62,7 +62,7 @@ public class DatabaseConfig {
         HashMap<String, Object> properties = new HashMap<>();
         properties.put("javax.persistence.validation.mode", "none");
         properties.put("hibernate.hbm2ddl.auto", "none");
-        properties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
+        properties.put("hibernate.dialect", "org.hibernate.dialect.MariaDBDialect");
         localContainerEntityManagerFactoryBean.setJpaPropertyMap(properties);
         return localContainerEntityManagerFactoryBean;
     }

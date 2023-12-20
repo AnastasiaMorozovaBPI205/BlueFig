@@ -4,8 +4,6 @@ import app.bluefig.entity.UserJpa;
 import app.bluefig.repository.UserJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -19,9 +17,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public void addUserList(String name, String email, String password, String role, String permissionCode,
                             LocalDate birthday, String sex, String doctorId) {
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        userJpaRepository.addUserJpa(name, email, passwordEncoder.encode(password), role, permissionCode, birthday,
-                sex, doctorId);
+        //PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+//        userJpaRepository.addUserJpa(name, email, passwordEncoder.encode(password), role, permissionCode, birthday,
+//                sex, doctorId);
+        userJpaRepository.addUserJpa(name, email, password, role, permissionCode, birthday, sex, doctorId);
     }
 
     @Override

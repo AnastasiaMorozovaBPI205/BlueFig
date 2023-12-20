@@ -24,6 +24,7 @@ public class UserController {
     public void addNewUser(String name, String email, String password, String role, String permissionCode,
                            LocalDate birthday, String sex, String doctorId) {
         userService.addUserList(name, email, password, role, permissionCode, birthday, sex, doctorId);
+        System.out.println("user added successfully");
     }
 
     /**

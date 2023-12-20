@@ -19,12 +19,12 @@ public interface UserJpaRepository extends JpaRepository<UserJpa, String> {
                     @Param("birthday") LocalDate birthday, @Param("sex") String sex,
                     @Param("doctor_id") String doctorId);
 
-    @Query(value = "select * from sma_service.user where sma_service.user.id == :id", nativeQuery = true)
+    @Query(value = "select * from user where user.id = :id", nativeQuery = true)
     UserJpa findUserJpa(@Param("id") String id);
 
-    @Query(value = "delete from sma_service.user where sma_service.user.id == :id", nativeQuery = true)
+    @Query(value = "delete from sma_service.user where sma_service.user.id = :id", nativeQuery = true)
     void deleteUserJpa(@Param("id") String id);
 
-    @Query(value = "select * from sma_service.user where sma_service.user.doctor_id == :doctor_id", nativeQuery = true)
+    @Query(value = "select * from sma_service.user where sma_service.user.doctor_id = :doctor_id", nativeQuery = true)
     List<UserJpa> findDoctorsPatientsJpa(@Param("doctor_id") String doctorId);
 }

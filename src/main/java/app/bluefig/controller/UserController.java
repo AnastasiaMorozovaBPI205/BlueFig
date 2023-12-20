@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -21,8 +22,16 @@ public class UserController {
      * Добавление нового пользователя в базу данных при регистрации.
      */
     @PostMapping("/user")
-    public void addNewUser(String name, String email, String password, String role, String permissionCode,
-                           LocalDate birthday, String sex, String doctorId) {
+    public void addNewUser(@RequestBody HashMap<String, String> data) {
+        String name = data.get("name");
+        String email = data.get("email");
+        String password = data.get("password");
+        String role = data.get("role");
+        String permissionCode = data.get("permissionCode");
+        LocalDate birthday = LocalDate.parse(data.get("birthday"));
+        String sex = data.get("sex");
+        String doctorId = data.get("doctorId");
+
         userService.addUserList(name, email, password, role, permissionCode, birthday, sex, doctorId);
         System.out.println("user added successfully");
     }
@@ -47,8 +56,13 @@ public class UserController {
         userService.deleteUserJpa(id);
     }
 
-    @GetMapping("/patients_list/{doctor_id} ")
-    public List<User> getDoctorsPatients(@PathVariable("doctor_id") String doctorId) {
+    /**
+     * Поиск пациентов врача.
+     * @param doctorId врача
+     * @return пациентов врача
+     */
+    @GetMapping("/patients_list/{doctorId}")
+    public List<User> getDoctorsPatients(@PathVariable String doctorId) {
         List<UserJpa> userJpas = userService.findDoctorsPatientsJpa(doctorId);
         return mapper.UserJpasToUsers(userJpas);
     }

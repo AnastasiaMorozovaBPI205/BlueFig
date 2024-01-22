@@ -7,8 +7,9 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface UserService {
-    void addUserList(String name, String email, String password, String role, String permissionCode,
-                     LocalDate birthday, String sex, String doctorId);
+    void addUserList(String username, String firstname, String lastname,
+                     String email, String passwordHash, String roleId,
+                     LocalDate birthday, String sex);
 
     UserJpa findUserJpa(String id);
 

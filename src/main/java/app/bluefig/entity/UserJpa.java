@@ -7,7 +7,6 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -20,14 +19,14 @@ import java.util.UUID;
 public class UserJpa {
     @Id
     private UUID id;
-    private String name;
+    private String username;
+    private String firstname;
+    private String lastname;
     private String email;
-    private String password;
-    private String role;
-    @Column(name = "permission_code")
-    private String permissionCode;
+    @Column(name = "password_hash")
+    private String passwordHash;
+    @Column(name = "role_id")
+    private String roleId;
     private LocalDate birthday;
     private String sex;
-    @Column(name = "doctor_id")
-    private String doctorId;
 }

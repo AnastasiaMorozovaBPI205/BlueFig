@@ -23,16 +23,16 @@ public class UserController {
      */
     @PostMapping("/user")
     public void addNewUser(@RequestBody HashMap<String, String> data) {
-        String name = data.get("name");
+        String username = data.get("username");
+        String firstname = data.get("firstname");
+        String lastname = data.get("lastname");
         String email = data.get("email");
-        String password = data.get("password");
-        String role = data.get("role");
-        String permissionCode = data.get("permissionCode");
+        String passwordHash = data.get("passwordHash");
+        String roleId = data.get("roleId");
         LocalDate birthday = LocalDate.parse(data.get("birthday"));
         String sex = data.get("sex");
-        String doctorId = data.get("doctorId");
 
-        userService.addUserList(name, email, password, role, permissionCode, birthday, sex, doctorId);
+        userService.addUserList(username, firstname, lastname, email, passwordHash, roleId, birthday, sex);
         System.out.println("user added successfully");
     }
 

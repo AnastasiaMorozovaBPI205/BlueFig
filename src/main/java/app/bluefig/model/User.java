@@ -12,12 +12,12 @@ import java.util.UUID;
 @NoArgsConstructor
 public class User {
     private UUID id;
-    private String name;
+    private String username;
+    private String firstname;
+    private String lastname;
     private String email;
-    private String password;
-    private String role;
-    private String permissionCode;
+    private String passwordHash;
+    private String roleId;
     private LocalDate birthday;
     private String sex;
-    private String doctorId;
 }

@@ -12,12 +12,12 @@ import java.util.List;
 
 @Repository
 public interface UserJpaRepository extends JpaRepository<UserJpa, String> {
-    @Query(value = "insert into sma_service.user (username, firstname, lastname, email, password_hash, role_id, birthday, sex)" +
-            " values (:username, :firstname, :lastname, :email, :password_hash, :role_id, :birthday, :sex)", nativeQuery = true)
+    @Query(value = "insert into sma_service.user (username, firstname, lastname, email, password_hash, role_id, birthday, sex, fathername)" +
+            " values (:username, :firstname, :lastname, :email, :password_hash, :role_id, :birthday, :sex, :fathername)", nativeQuery = true)
     void addUserJpa(@Param("username") String username, @Param("firstname") String firstname,
                     @Param("lastname") String lastname, @Param("email") String email,
                     @Param("password_hash") String passwordHash, @Param("role_id") String roleId,
-                    @Param("birthday") LocalDate birthday, @Param("sex") String sex);
+                    @Param("birthday") LocalDate birthday, @Param("sex") String sex, @Param("fathername") String fathername);
 
     @Query(value = "select * from user where user.id = :id", nativeQuery = true)
     UserJpa findUserJpa(@Param("id") String id);
@@ -27,8 +27,17 @@ public interface UserJpaRepository extends JpaRepository<UserJpa, String> {
 
     @Query(value = "select sma_service.user.id, sma_service.user.username, sma_service.user.firstname, " +
             "sma_service.user.lastname, sma_service.user.email, sma_service.user.password_hash, " +
-            "sma_service.user.role_id, sma_service.user.birthday, sma_service.user.sex from sma_service.user \n" +
-            "join sma_service.doctor_watch on sma_service.user.id = sma_service.doctor_watch.patient_id  \n" +
+            "sma_service.user.role_id, sma_service.user.birthday, sma_service.user.sex, " +
+            "sma_service.user.fathername from sma_service.user " +
+            "join sma_service.doctor_watch on sma_service.user.id = sma_service.doctor_watch.patient_id  " +
             "where sma_service.doctor_watch.doctor_id = :doctor_id;", nativeQuery = true)
     List<UserJpa> findDoctorsPatientsJpa(@Param("doctor_id") String doctorId);
+
+    @Query(value = "select sma_service.user.id, sma_service.user.username, sma_service.user.firstname, " +
+            "sma_service.user.lastname, sma_service.user.email, sma_service.user.password_hash, " +
+            "sma_service.user.role_id, sma_service.user.birthday, sma_service.user.sex," +
+            "sma_service.user.fathername from sma_service.user " +
+            "join sma_service.doctor_watch on sma_service.user.id = sma_service.doctor_watch.doctor_id " +
+            "where sma_service.doctor_watch.patient_id = :patient_id;", nativeQuery = true)
+    List<UserJpa> findPatientsDoctorsJpa(@Param("patient_id") String patientId);
 }

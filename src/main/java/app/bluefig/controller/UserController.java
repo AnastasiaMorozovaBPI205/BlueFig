@@ -31,8 +31,9 @@ public class UserController {
         String roleId = data.get("roleId");
         LocalDate birthday = LocalDate.parse(data.get("birthday"));
         String sex = data.get("sex");
+        String fathername = data.get("fathername");
 
-        userService.addUserList(username, firstname, lastname, email, passwordHash, roleId, birthday, sex);
+        userService.addUserList(username, firstname, lastname, fathername, email, passwordHash, roleId, birthday, sex);
         System.out.println("user added successfully");
     }
 
@@ -64,6 +65,17 @@ public class UserController {
     @GetMapping("/patients_list/{doctorId}")
     public List<User> getDoctorsPatients(@PathVariable String doctorId) {
         List<UserJpa> userJpas = userService.findDoctorsPatientsJpa(doctorId);
+        return mapper.UserJpasToUsers(userJpas);
+    }
+
+    /**
+     * Поиск врачей пациента.
+     * @param patientId пациента
+     * @return врачей пациента
+     */
+    @GetMapping("/doctors_list/{patientId}")
+    public List<User> getPatientsDoctors(@PathVariable String patientId) {
+        List<UserJpa> userJpas = userService.findPatientsDoctorsJpa(patientId);
         return mapper.UserJpasToUsers(userJpas);
     }
 }

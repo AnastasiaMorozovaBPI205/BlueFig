@@ -14,13 +14,14 @@ public class UserServiceImpl implements UserService {
     private UserJpaRepository userJpaRepository;
 
     @Override
-    public void addUserList(String username, String firstname, String lastname,
+    public void addUserList(String username, String firstname, String lastname, String fathername,
                             String email, String passwordHash, String roleId,
                             LocalDate birthday, String sex) {
         //PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 //        userJpaRepository.addUserJpa(name, email, passwordEncoder.encode(password), role, permissionCode, birthday,
 //                sex, doctorId);
-        userJpaRepository.addUserJpa(username, firstname, lastname, email, passwordHash, roleId, birthday, sex);
+        userJpaRepository.addUserJpa(username, firstname, lastname, email, passwordHash, roleId, birthday, sex,
+                fathername);
     }
 
     @Override
@@ -36,5 +37,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserJpa> findDoctorsPatientsJpa(String doctorId) {
         return userJpaRepository.findDoctorsPatientsJpa(doctorId);
+    }
+
+    @Override
+    public List<UserJpa> findPatientsDoctorsJpa(String patientId) {
+        return userJpaRepository.findPatientsDoctorsJpa(patientId);
     }
 }

@@ -22,6 +22,7 @@ public class UserJpa {
     private String username;
     private String firstname;
     private String lastname;
+    private String fathername;
     private String email;
     @Column(name = "password_hash")
     private String passwordHash;

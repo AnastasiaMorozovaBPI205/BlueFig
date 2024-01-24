@@ -68,7 +68,7 @@ public class UserController {
      * @return данные пользователя
      */
     @GetMapping("/user/{id}")
-    public User getUser(@PathVariable String id) {
+    public User getUserById(@PathVariable String id) {
         UserJpa userJpa = userService.findUserJpaById(id);
         return mapper.UserJpaToUser(userJpa);
     }
@@ -78,7 +78,7 @@ public class UserController {
      * @param id пользователя
      */
     @DeleteMapping("/user/{id}")
-    public void deleteUser(@PathVariable String id) {
+    public void deleteUserById(@PathVariable String id) {
         userService.deleteUserJpa(id);
     }
 
@@ -102,5 +102,15 @@ public class UserController {
     public List<User> getPatientsDoctors(@PathVariable String patientId) {
         List<UserJpa> userJpas = userService.findPatientsDoctorsJpa(patientId);
         return mapper.UserJpasToUsers(userJpas);
+    }
+
+    /**
+     * Привязка пациента к врачу.
+     * @param patientId пациента
+     * @param doctorId врача
+     */
+    @PostMapping("/link_patient/{patientId}/{doctorId}")
+    public void linkPatientToDoctor(@PathVariable String patientId, @PathVariable String doctorId) {
+        userService.linkPatientToDoctor(patientId, doctorId);
     }
 }

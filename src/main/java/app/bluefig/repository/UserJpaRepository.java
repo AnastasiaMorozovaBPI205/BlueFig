@@ -22,6 +22,9 @@ public interface UserJpaRepository extends JpaRepository<UserJpa, String> {
     @Query(value = "select * from user where user.id = :id", nativeQuery = true)
     UserJpa findUserJpaById(@Param("id") String id);
 
+    @Query(value = "insert into doctor_watch (doctor_id, patient_id) values (:doctor_id, :patient_id);", nativeQuery = true)
+    void linkPatientToDoctor(@Param("patient_id") String patientId, @Param("doctor_id") String doctorId);
+
     @Query(value = "select * from user where user.username = :username and user.password_hash = :password_hash;", nativeQuery = true)
     UserJpa findUserJpaByUsernamePasswordHash(@Param("username") String username, @Param("password_hash") String passwordHash);
 

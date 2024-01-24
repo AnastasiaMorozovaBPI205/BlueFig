@@ -32,6 +32,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void linkPatientToDoctor(String patientId, String doctorId) {
+        userJpaRepository.linkPatientToDoctor(patientId, doctorId);
+    }
+
+    @Override
     public void deleteUserJpa(String id) {
         userJpaRepository.deleteUserJpa(id);
     }

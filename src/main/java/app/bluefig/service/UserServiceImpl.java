@@ -17,16 +17,18 @@ public class UserServiceImpl implements UserService {
     public void addUserList(String username, String firstname, String lastname, String fathername,
                             String email, String passwordHash, String roleId,
                             LocalDate birthday, String sex) {
-        //PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-//        userJpaRepository.addUserJpa(name, email, passwordEncoder.encode(password), role, permissionCode, birthday,
-//                sex, doctorId);
         userJpaRepository.addUserJpa(username, firstname, lastname, email, passwordHash, roleId, birthday, sex,
                 fathername);
     }
 
     @Override
-    public UserJpa findUserJpa(String id) {
-        return userJpaRepository.findUserJpa(id);
+    public UserJpa findUserJpaById(String id) {
+        return userJpaRepository.findUserJpaById(id);
+    }
+
+    @Override
+    public UserJpa findUserJpaByUsernamePasswordHash(String username, String passwordHash) {
+        return userJpaRepository.findUserJpaByUsernamePasswordHash(username, passwordHash);
     }
 
     @Override

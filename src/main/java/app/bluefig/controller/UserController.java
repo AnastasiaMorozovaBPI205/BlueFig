@@ -5,7 +5,9 @@ import app.bluefig.entity.UserJpa;
 import app.bluefig.model.User;
 import app.bluefig.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -27,14 +29,37 @@ public class UserController {
         String firstname = data.get("firstname");
         String lastname = data.get("lastname");
         String email = data.get("email");
-        String passwordHash = data.get("passwordHash");
-        String roleId = data.get("roleId");
         LocalDate birthday = LocalDate.parse(data.get("birthday"));
         String sex = data.get("sex");
         String fathername = data.get("fathername");
+        String roleId = data.get("roleId");
+
+        String password = data.get("password");
+        String passwordHash = String.valueOf(password.hashCode());
 
         userService.addUserList(username, firstname, lastname, fathername, email, passwordHash, roleId, birthday, sex);
         System.out.println("user added successfully");
+    }
+
+    /**
+     * Авторизация пользователя по логину и паролю.
+     * @param data данные пользователя
+     */
+    @PostMapping("/login")
+    public User authorization(@RequestBody HashMap<String, String> data) {
+        String username = data.get("username");
+        String password = data.get("password");
+        String passwordHash = String.valueOf(password.hashCode());
+
+        UserJpa userJpa = userService.findUserJpaByUsernamePasswordHash(username, passwordHash);
+
+        if (userJpa == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED, "Ошибка авторизации!"
+            );
+        }
+
+        return mapper.UserJpaToUser(userJpa);
     }
 
     /**
@@ -44,7 +69,7 @@ public class UserController {
      */
     @GetMapping("/user/{id}")
     public User getUser(@PathVariable String id) {
-        UserJpa userJpa = userService.findUserJpa(id);
+        UserJpa userJpa = userService.findUserJpaById(id);
         return mapper.UserJpaToUser(userJpa);
     }
 

@@ -20,7 +20,10 @@ public interface UserJpaRepository extends JpaRepository<UserJpa, String> {
                     @Param("birthday") LocalDate birthday, @Param("sex") String sex, @Param("fathername") String fathername);
 
     @Query(value = "select * from user where user.id = :id", nativeQuery = true)
-    UserJpa findUserJpa(@Param("id") String id);
+    UserJpa findUserJpaById(@Param("id") String id);
+
+    @Query(value = "select * from user where user.username = :username and user.password_hash = :password_hash;", nativeQuery = true)
+    UserJpa findUserJpaByUsernamePasswordHash(@Param("username") String username, @Param("password_hash") String passwordHash);
 
     @Query(value = "delete from sma_service.user where sma_service.user.id = :id", nativeQuery = true)
     void deleteUserJpa(@Param("id") String id);

@@ -1,7 +1,6 @@
 package app.bluefig.service;
 
 import app.bluefig.entity.UserJpa;
-import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -11,7 +10,8 @@ public interface UserService {
                      String email, String passwordHash, String roleId,
                      LocalDate birthday, String sex);
 
-    UserJpa findUserJpa(String id);
+    UserJpa findUserJpaById(String id);
+    UserJpa findUserJpaByUsernamePasswordHash(String username, String passwordHash);
 
     void deleteUserJpa(String id);
 

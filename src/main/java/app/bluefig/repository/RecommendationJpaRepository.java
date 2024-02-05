@@ -1,6 +1,8 @@
 package app.bluefig.repository;
 
 import app.bluefig.entity.RecommendationJpa;
+import app.bluefig.entity.UserJpa;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -9,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-public interface RecommendationJpaRepository {
+public interface RecommendationJpaRepository extends JpaRepository<RecommendationJpa, String>  {
     @Query(value = "select sma_service.doctor_recommendation.id, sma_service.doctor_recommendation.doctor_id, " +
             "sma_service.doctor_recommendation.patient_id, sma_service.doctor_recommendation.datetime, " +
             "sma_service.doctor_recommendation.recommendation, sma_service.user.firstname, sma_service.user.lastname, " +

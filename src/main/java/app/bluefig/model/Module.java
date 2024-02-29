@@ -10,7 +10,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 public class Module {
-    private UUID id;
+    private String id;
     private String patientId;
     private String doctorId;
 }

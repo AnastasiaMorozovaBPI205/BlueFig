@@ -80,7 +80,7 @@ public class ModulesController {
         moduleFillInService.addModuleFillIn(fillInId.toString(), questionaryId, dateTime);
 
         for (FieldAnswerJpa fieldAnswer : fieldAnswers) {
-            fieldAnswerService.addFieldAnswer(fieldAnswer.getValue(), fieldAnswer.getFillIn(), fieldAnswer.getFieldId());
+            fieldAnswerService.addFieldAnswer(fieldAnswer.getValue(), fieldAnswer.getFieldAnswerIdJpa().getFillIn(), fieldAnswer.getFieldAnswerIdJpa().getFieldId());
         }
     }
 

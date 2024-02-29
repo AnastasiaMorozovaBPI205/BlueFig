@@ -18,7 +18,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class ModuleFillInJpa {
     @Id
-    private UUID id;
+    private String id;
     @Column(name = "questionary_id")
     private String questionaryId;
     private LocalDateTime datetime;

@@ -12,7 +12,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 public class ModuleFillIn {
-    private UUID id;
+    private String id;
     private String questionaryId;
     private LocalDateTime datetime;
 }

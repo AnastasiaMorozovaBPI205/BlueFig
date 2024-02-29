@@ -18,7 +18,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class UserJpa {
     @Id
-    private UUID id;
+    private String id;
     private String username;
     private String firstname;
     private String lastname;

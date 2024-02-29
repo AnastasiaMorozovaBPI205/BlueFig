@@ -17,7 +17,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class ModuleFieldJpa {
     @Id
-    private UUID id;
+    private String id;
     @Column(name = "questionary_id")
     private String questionaryId;
     @Column(name = "order_number")

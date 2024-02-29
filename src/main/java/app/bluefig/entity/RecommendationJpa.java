@@ -18,14 +18,11 @@ import java.util.UUID;
 @NoArgsConstructor
 public class RecommendationJpa {
     @Id
-    private UUID id;
+    private String id;
     @Column(name = "doctor_id")
-    private UUID doctorId;
+    private String doctorId;
     @Column(name = "patient_id")
-    private UUID patientId;
+    private String patientId;
     private LocalDateTime datetime;
     private String recommendation;
-
-    @Column(name = "doctor_name")
-    private String doctorName;
 }

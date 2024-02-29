@@ -17,7 +17,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class ParameterJpa {
     @Id
-    private UUID id;
+    private String id;
     @Column(name = "data_type")
     private String dataType;
     private String name;

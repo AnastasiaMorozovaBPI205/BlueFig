@@ -10,7 +10,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 public class ModuleField {
-    private UUID id;
+    private String id;
     private String questionaryId;
     private Integer orderNumber;
     private Integer frequency;

@@ -11,10 +11,9 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 public class Recommendation {
-    private UUID id;
-    private UUID doctorId;
-    private UUID patientId;
+    private String id;
+    private String doctorId;
+    private String patientId;
     private LocalDateTime datetime;
     private String recommendation;
-    private String doctorName;
 }

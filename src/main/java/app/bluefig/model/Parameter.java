@@ -11,7 +11,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 public class Parameter {
-    private UUID id;
+    private String id;
     private String dataType;
     private String name;
     private String description;

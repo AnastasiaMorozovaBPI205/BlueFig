@@ -30,10 +30,9 @@ public class RecommendationController {
     public void addRecommendation(@RequestBody HashMap<String, String> data) {
         String patientId = data.get("patientId");
         String doctorId = data.get("doctorId");
-        LocalDateTime datetime = LocalDateTime.parse(data.get("datetime"));
         String recommendation = data.get("recommendation");
 
-        recommendationService.addRecommendation(patientId, doctorId, datetime, recommendation);
+        recommendationService.addRecommendation(patientId, doctorId, LocalDateTime.now(), recommendation);
         System.out.println("recommendation added successfully");
     }
 

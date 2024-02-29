@@ -17,7 +17,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class ModuleJpa {
     @Id
-    private UUID id;
+    private String id;
     @Column(name = "patient_id")
     private String patientId;
     @Column(name = "doctor_id")

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 
@@ -30,12 +31,12 @@ public class UserController {
         String firstname = data.get("firstname");
         String lastname = data.get("lastname");
         String email = data.get("email");
-        LocalDate birthday = LocalDate.parse(data.get("birthday"));
+        LocalDate birthday = LocalDate.parse(data.get("birthday").substring(0, 10));
         String sex = data.get("sex");
         String fathername = data.get("fathername");
         String roleId = data.get("roleId");
 
-        String password = data.get("password");
+        String password = data.get("passwordHash");
         String passwordHash = String.valueOf(password.hashCode());
 
         userService.addUserList(username, firstname, lastname, fathername, email, passwordHash, roleId, birthday, sex);

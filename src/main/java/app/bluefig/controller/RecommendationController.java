@@ -2,18 +2,16 @@ package app.bluefig.controller;
 
 import app.bluefig.MapStructMapper;
 import app.bluefig.entity.RecommendationJpa;
-import app.bluefig.entity.UserJpa;
 import app.bluefig.model.Recommendation;
-import app.bluefig.model.User;
 import app.bluefig.service.RecommendationServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:8080")
 @RestController
 public class RecommendationController {
     @Autowired

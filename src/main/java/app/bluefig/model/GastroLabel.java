@@ -7,11 +7,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Parameter {
+public class GastroLabel {
     private String id;
-    private String dataType;
     private String name;
-    private String description;
-    private String moduleId;
-    private String value;
+    private String isRedFlag;
 }

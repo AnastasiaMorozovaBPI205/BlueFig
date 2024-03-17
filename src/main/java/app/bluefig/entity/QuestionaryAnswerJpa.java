@@ -15,5 +15,5 @@ import lombok.Setter;
 public class QuestionaryAnswerJpa {
     String value;
     @EmbeddedId
-    QuestionaryAnswerIdJpa fieldAnswerIdJpa;
+    QuestionaryAnswerIdJpa answerIdJpa;
 }

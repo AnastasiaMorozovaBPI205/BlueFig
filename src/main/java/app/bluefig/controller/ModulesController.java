@@ -2,6 +2,7 @@ package app.bluefig.controller;
 
 import app.bluefig.MapStructMapper;
 import app.bluefig.dto.ModuleWithParametersDTO;
+import app.bluefig.entity.ModuleFillInJpa;
 import app.bluefig.entity.ModuleJpa;
 import app.bluefig.entity.QuestionaryAnswerJpa;
 import app.bluefig.entity.ParameterJpa;
@@ -33,13 +34,20 @@ public class ModulesController {
     private ModuleFillInServiceImpl moduleFillInService;
 
     @Autowired
-    private QuestionaryAnswerService questionaryAnswerService;
+    private QuestionaryAnswerServiceImpl questionaryAnswerService;
+
+    @Autowired
+    private GastroLabelServiceImpl gastroLabelService;
 
     @Autowired
     private ModuleServiceImpl moduleService;
 
     @GetMapping("/parameters")
     public List<ModuleWithParametersDTO> getParameters() {
+        return getAllModules();
+    }
+
+    private List<ModuleWithParametersDTO> getAllModules() {
         List<ParameterJpa> parametersJpas = parameterService.findParametersJpa();
         List<ModuleJpa> moduleJpas = moduleService.findModulesJpa();
         List<ModuleWithParametersDTO> moduleWithParametersDTOS = new ArrayList<>();
@@ -63,59 +71,124 @@ public class ModulesController {
 
     @PostMapping("/module")
     public void addModule(@RequestBody HashMap<String, Object> data) {
-        List<ModuleFieldJpa> module = (List<ModuleFieldJpa>) data.get("questionary");
+        String moduleId = data.get("moduleId").toString();
+        int frequency = Integer.parseInt(data.get("frequency").toString());
         String patientId = data.get("patientId").toString();
         String doctorId = data.get("doctorId").toString();
         UUID questionaryId = UUID.randomUUID();
 
-        questionaryService.addQuestionary(questionaryId.toString(), doctorId, patientId);
+        questionaryService.addQuestionary(questionaryId.toString(), doctorId, patientId, moduleId, frequency);
+    }
 
-        for (ModuleFieldJpa moduleFieldJpa : module) {
-            moduleFieldService.addModuleField(String.valueOf(questionaryId), moduleFieldJpa.getOrderNumber(),
-                    moduleFieldJpa.getFrequency(), moduleFieldJpa.getParameterId());
-        }
+    @DeleteMapping("/questionary/{questionaryId}")
+    public void deleteQuestionary(@PathVariable String questionaryId) {
+        questionaryService.deleteQuestionaryById(questionaryId);
+        // TODO: удалить questionaryfillin questionaryanswer ?
+    }
+
+    @PutMapping("/questionary/{questionaryId}/{frequency}")
+    public void changeQuestionaryFrequency(@PathVariable String questionaryId, @PathVariable String frequency) {
+        questionaryService.updateQuestionaryFrequency(questionaryId, Integer.parseInt(frequency));
     }
 
     @GetMapping("/module/{patient_id}/{doctor_id}")
-    public HashMap<String, List<ModuleField>> findModulesByPatientDoctorIds(@PathVariable String patientId, @PathVariable String doctorId) {
+    public List<ModuleWithParametersDTO> findModulesByPatientDoctorIds(@PathVariable String patientId,
+                                                                       @PathVariable String doctorId) {
         List<Questionary> questionaries = mapper.ModuleJpasToModules(questionaryService.findQuestionaryJpaByPatientDoctorIds(doctorId, patientId));
-        HashMap<String, List<ModuleField>> moduleFields = new HashMap<>();
+        List<ModuleWithParametersDTO> modules = getAllModules();
 
+        List<ModuleWithParametersDTO> modulesForPatient = new ArrayList<>();
         for (Questionary questionary : questionaries) {
-            List<ModuleFieldJpa> fieldJpas = moduleFieldService.findModuleFieldsBy(questionary.getId().toString());
-            List<ModuleField> fields = mapper.ModuleFieldJpasToModuleFields(fieldJpas);
-            moduleFields.put(questionary.getId().toString(), fields);
+            for (ModuleWithParametersDTO module : modules) {
+                if (questionary.getModuleId().equals(module.getId())) {
+                    module.setFrequency(questionary.getFrequency());
+                    modulesForPatient.add(module);
+                }
+            }
         }
 
-        return moduleFields;
+        return modulesForPatient;
+    }
+
+    @GetMapping("/module/gastro_label/{parameter_id}")
+    public List<GastroLabel> findGastroParameters(@PathVariable String parameterId) {
+        return mapper.GastroLabelJpasToGastroLabels(gastroLabelService.findGastroLabelByParameter(parameterId));
     }
 
     @PostMapping("moduleFillIn")
     public void addModuleFillIn(@RequestBody HashMap<String, Object> data) {
-        List<QuestionaryAnswerJpa> fieldAnswers = (List<QuestionaryAnswerJpa>) data.get("fillIn");
+        List<QuestionaryAnswerJpa> answerJpas = (List<QuestionaryAnswerJpa>) data.get("fillIn");
         String questionaryId = data.get("questionaryId").toString();
         LocalDateTime dateTime = (LocalDateTime) data.get("datetime");
         UUID fillInId = UUID.randomUUID();
 
         moduleFillInService.addModuleFillIn(fillInId.toString(), questionaryId, dateTime);
 
-        for (QuestionaryAnswerJpa fieldAnswer : fieldAnswers) {
-            questionaryAnswerService.addFieldAnswer(fieldAnswer.getValue(), fieldAnswer.getFieldAnswerIdJpa().getFillIn(), fieldAnswer.getFieldAnswerIdJpa().getParameterId());
+        for (QuestionaryAnswerJpa answerJpa : answerJpas) {
+            questionaryAnswerService.addFieldAnswer(answerJpa.getValue(), String.valueOf(fillInId), answerJpa.getAnswerIdJpa().getParameterId());
         }
     }
 
     @GetMapping("/moduleFillIn/{patient_id}/{doctor_id}")
-    public HashMap<String, List<QuestionaryAnswer>> findModuleFillInsByPatientDoctorIds(@PathVariable String patientId,
+    public List<ModuleWithParametersDTO>  findModuleFillInsByPatientDoctorIds(@PathVariable String patientId,
                                                                                         @PathVariable String doctorId) {
-        List<ModuleFillIn> modules = mapper.ModuleFillInJpasToModuleFillIns(moduleFillInService.findModulesFillInJpaByPatientDoctorIds(doctorId, patientId));
-        HashMap<String, List<QuestionaryAnswer>> moduleFieldAnswers = new HashMap<>();
+        List<Questionary> questionaries = mapper.ModuleJpasToModules(questionaryService.findQuestionaryJpaByPatientDoctorIds(doctorId, patientId));
+        List<ModuleWithParametersDTO> modules = getAllModules();
 
-        for (ModuleFillIn fillIn : modules) {
-            List<QuestionaryAnswerJpa> questionaryAnswerJpas = questionaryAnswerService.findFieldAnswers(fillIn.getId().toString());
-            List<QuestionaryAnswer> fieldsAnswers = mapper.FieldAnswerJpasToFieldAnswers(questionaryAnswerJpas);
-            moduleFieldAnswers.put(fillIn.getId().toString(), fieldsAnswers);
+        List<ModuleWithParametersDTO> patientsModules = new ArrayList<>();
+        for (Questionary questionary : questionaries) {
+            for (ModuleWithParametersDTO module : modules) {
+                if (questionary.getModuleId().equals(module.getId())) {
+                    module.setFrequency(questionary.getFrequency());
+                    patientsModules.add(module);
+                    break;
+                }
+            }
         }
 
-        return moduleFieldAnswers;
+        List<ModuleWithParametersDTO> patientsFillIns = new ArrayList<>();
+        List<ModuleFillInJpa> fillIns = moduleFillInService.findModulesFillInJpaByPatientDoctorIds(doctorId, patientId);
+
+        for (ModuleFillInJpa moduleFillInJpa : fillIns) {
+            ModuleWithParametersDTO module = new ModuleWithParametersDTO();
+
+            for (ModuleWithParametersDTO moduleWithParametersDTO : patientsModules) {
+                if (moduleWithParametersDTO.getId().equals(getModuleIdFromQuestionary(questionaries, moduleFillInJpa.getQuestionaryId()))) {
+                    module.setId(moduleWithParametersDTO.getId());
+                    module.setName(moduleWithParametersDTO.getName());
+                    module.setFrequency(moduleWithParametersDTO.getFrequency());
+                    module.setParameterList(moduleWithParametersDTO.getParameterList());
+                    break;
+                }
+            }
+
+            module.setDateTime(moduleFillInJpa.getDatetime());
+
+            List<QuestionaryAnswerJpa> questionaryAnswerJpas = questionaryAnswerService.findFieldAnswers(moduleFillInJpa.getId());
+            for (Parameter parameter : module.getParameterList()) {
+                for (QuestionaryAnswerJpa questionaryAnswerJpa : questionaryAnswerJpas) {
+                    if (parameter.getId().equals(questionaryAnswerJpa.getAnswerIdJpa().getParameterId())) {
+                        parameter.setValue(questionaryAnswerJpa.getValue());
+                        break;
+                    }
+                }
+            }
+
+            patientsFillIns.add(module);
+        }
+
+        return patientsFillIns;
     }
+
+    private String getModuleIdFromQuestionary(List<Questionary> questionaries, String questionaryId) {
+        for (Questionary questionary : questionaries) {
+            if (questionary.getId().equals(questionaryId)) {
+                return questionary.getModuleId();
+            }
+        }
+
+        return "";
+    }
+
+
 }

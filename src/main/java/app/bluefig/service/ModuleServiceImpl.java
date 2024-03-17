@@ -16,4 +16,5 @@ public class ModuleServiceImpl implements ModuleService {
     public List<ModuleJpa> findModulesJpa() {
         return moduleJpaRepository.findAll();
     }
+
 }

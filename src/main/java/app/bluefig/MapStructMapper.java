@@ -25,4 +25,7 @@ public interface MapStructMapper {
     ModuleFillIn ModuleFillInJpaToModuleFillIn(ModuleFillInJpa moduleFillInJpa);
     List<ModuleFillIn> ModuleFillInJpasToModuleFillIns(List<ModuleFillInJpa> moduleFillInJpa);
 
+    GastroLabel GastroLabelJpaToGastroLabel (GastroLabelJpa gastroLabelJpa);
+    List<GastroLabel> GastroLabelJpasToGastroLabels (List<GastroLabelJpa> gastroLabelJpa);
+
 }

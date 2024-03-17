@@ -21,4 +21,8 @@ public interface QuestionaryJpaRepository extends JpaRepository<QuestionaryJpa, 
             nativeQuery = true)
     List<QuestionaryJpa> findQuestionaryJpaByPatientDoctorIds(@Param("doctor_id") String doctorId,
                                                               @Param("patient_id") String patientId);
+
+    @Query(value = "update questionary set frequency = :frequency where id = :id;",
+            nativeQuery = true)
+    void updateQuestionaryFrequency(@Param("id") String id, @Param("frequency") int frequency);
 }

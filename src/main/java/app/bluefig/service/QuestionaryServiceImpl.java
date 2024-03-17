@@ -21,4 +21,14 @@ public class QuestionaryServiceImpl implements QuestionaryService {
     public List<QuestionaryJpa> findQuestionaryJpaByPatientDoctorIds(String doctorId, String patientId) {
         return questionaryJpaRepository.findQuestionaryJpaByPatientDoctorIds(doctorId, patientId);
     }
+
+    @Override
+    public void deleteQuestionaryById(String questionaryId) {
+        questionaryJpaRepository.deleteById(questionaryId);
+    }
+
+    @Override
+    public void updateQuestionaryFrequency(String id, int frequency) {
+        questionaryJpaRepository.updateQuestionaryFrequency(id, frequency);
+    }
 }

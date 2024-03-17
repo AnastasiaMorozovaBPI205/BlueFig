@@ -12,8 +12,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class FieldAnswerJpa {
+public class QuestionaryAnswerJpa {
     String value;
     @EmbeddedId
-    FieldAnswerIdJpa fieldAnswerIdJpa;
+    QuestionaryAnswerIdJpa fieldAnswerIdJpa;
 }

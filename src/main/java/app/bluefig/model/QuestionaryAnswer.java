@@ -7,8 +7,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class FieldAnswer {
+public class QuestionaryAnswer {
     String value;
     String fillIn;
-    String fieldId;
+    String parameterId;
 }

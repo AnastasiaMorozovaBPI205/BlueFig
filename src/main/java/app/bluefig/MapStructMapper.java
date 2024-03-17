@@ -2,7 +2,6 @@ package app.bluefig;
 
 import app.bluefig.entity.*;
 import app.bluefig.model.*;
-import app.bluefig.model.Module;
 import org.mapstruct.Mapper;
 
 import java.util.List;
@@ -20,15 +19,10 @@ public interface MapStructMapper {
     Parameter ParameterJpaToParameter(ParameterJpa parameterJpa);
     List<Parameter> ParameterJpasToParameters(List<ParameterJpa> parameterJpa);
 
-    Module ModuleJpaToModule(ModuleJpa moduleJpa);
-    List<Module> ModuleJpasToModules(List<ModuleJpa> moduleJpa);
-
-    ModuleField ModuleFieldJpaToModuleField(ModuleFieldJpa moduleFieldJpa);
-    List<ModuleField> ModuleFieldJpasToModuleFields(List<ModuleFieldJpa> moduleFieldJpa);
+    Questionary ModuleJpaToModule(QuestionaryJpa moduleJpa);
+    List<Questionary> ModuleJpasToModules(List<QuestionaryJpa> moduleJpa);
 
     ModuleFillIn ModuleFillInJpaToModuleFillIn(ModuleFillInJpa moduleFillInJpa);
     List<ModuleFillIn> ModuleFillInJpasToModuleFillIns(List<ModuleFillInJpa> moduleFillInJpa);
 
-    FieldAnswer FieldAnswerJpaToFieldAnswer(FieldAnswerJpa FieldAnswerJpa);
-    List<FieldAnswer> FieldAnswerJpasToFieldAnswers(List<FieldAnswerJpa> FieldAnswerJpa);
 }

@@ -8,9 +8,9 @@ import lombok.Setter;
 @Embeddable
 @Getter
 @Setter
-public class FieldAnswerIdJpa {
+public class QuestionaryAnswerIdJpa {
     @Column(name = "fillin_id")
     String fillIn;
-    @Column(name = "field_id")
-    String fieldId;
+    @Column(name = "parameter_id")
+    String parameterId;
 }

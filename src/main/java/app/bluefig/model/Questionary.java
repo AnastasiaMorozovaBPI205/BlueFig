@@ -1,19 +1,16 @@
 package app.bluefig.model;
 
-import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.UUID;
-
 @Getter
 @Setter
 @NoArgsConstructor
-public class Parameter {
+public class Questionary {
     private String id;
-    private String dataType;
-    private String name;
-    private String description;
+    private String patientId;
+    private String doctorId;
     private String moduleId;
+    private int frequency;
 }

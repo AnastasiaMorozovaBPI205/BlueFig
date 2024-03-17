@@ -8,17 +8,12 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class ModuleServiceImpl implements ModuleService{
+public class ModuleServiceImpl implements ModuleService {
     @Autowired
     ModuleJpaRepository moduleJpaRepository;
 
     @Override
-    public void addModule(String id, String doctorId, String patientId) {
-        moduleJpaRepository.addModule(id, doctorId, patientId);
-    }
-
-    @Override
-    public List<ModuleJpa> findModulesJpaByPatientDoctorIds(String doctorId, String patientId) {
-        return moduleJpaRepository.findModulesJpaByPatientDoctorIds(doctorId, patientId);
+    public List<ModuleJpa> findModulesJpa() {
+        return moduleJpaRepository.findAll();
     }
 }

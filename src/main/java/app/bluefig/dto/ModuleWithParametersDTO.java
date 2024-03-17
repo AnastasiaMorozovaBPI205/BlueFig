@@ -1,13 +1,17 @@
-package app.bluefig.model;
+package app.bluefig.dto;
 
+import app.bluefig.model.Parameter;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
-public class Module {
+public class ModuleWithParametersDTO {
     private String id;
     private String name;
+    List<Parameter> parameterList;
 }

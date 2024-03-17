@@ -8,20 +8,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.UUID;
-
 @Entity
-@Table(name = "parameters", schema = "sma_service")
+@Table(name = "questionary", schema = "sma_service")
 @Getter
 @Setter
 @NoArgsConstructor
-public class ParameterJpa {
+public class QuestionaryJpa {
     @Id
     private String id;
-    @Column(name = "data_type")
-    private String dataType;
-    private String name;
-    private String description;
+    @Column(name = "patient_id")
+    private String patientId;
+    @Column(name = "doctor_id")
+    private String doctorId;
     @Column(name = "module_id")
     private String moduleId;
+    private int frequency;
 }

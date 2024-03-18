@@ -30,16 +30,24 @@ public class UserController {
         String firstname = data.get("firstname");
         String lastname = data.get("lastname");
         String email = data.get("email");
-        LocalDate birthday = LocalDate.parse(data.get("birthday").substring(0, 10));
+        LocalDate birthday = getDate(data.get("birthday"));
         String sex = data.get("sex");
         String fathername = data.get("fathername");
         String roleId = data.get("roleId");
 
-        String password = data.get("passwordHash");
+        String password = data.get("password");
         String passwordHash = String.valueOf(password.hashCode());
 
         userService.addUserList(username, firstname, lastname, fathername, email, passwordHash, roleId, birthday, sex);
         System.out.println("user added successfully");
+    }
+
+    private LocalDate getDate(String dateStr) {
+        if (dateStr.length() > 10) {
+            return LocalDate.parse(dateStr.substring(0, 10));
+        }
+
+        return LocalDate.parse(dateStr);
     }
 
     /**

@@ -30,7 +30,7 @@ public class RecommendationTest {
     private RecommendationServiceImpl service;
     @MockBean
     private MapStructMapper mapper;
-    private LocalDateTime localDateTime = LocalDateTime.of(2022, 7, 7, 7, 7, 7, 7);
+    private final LocalDateTime localDateTime = LocalDateTime.of(2022, 7, 7, 7, 7, 7, 7);
 
     @Test
     void addRecommendationTest() throws Exception {

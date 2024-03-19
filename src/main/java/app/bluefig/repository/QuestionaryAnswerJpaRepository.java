@@ -11,10 +11,10 @@ import java.util.List;
 @Repository
 public interface QuestionaryAnswerJpaRepository extends JpaRepository<QuestionaryAnswerJpa, String> {
     @Query(value = "insert into questionary_answer (value, fillin_id, parameter_id) " +
-            "values (:value, :fillin_id, :parameter_id);", nativeQuery = true)
+            "values (:value, :fillin_id, :parameter_id)", nativeQuery = true)
     void addFieldAnswer(@Param("value") String value, @Param("fillin_id") String fillInId,
                         @Param("parameter_id") String parameterId);
 
-    @Query(value = "select * from questionary_answer where fillin_id = :fillin_id;", nativeQuery = true)
+    @Query(value = "select * from questionary_answer where fillin_id = :fillin_id", nativeQuery = true)
     List<QuestionaryAnswerJpa> findFieldAnswers(@Param("fillin_id") String fillInId);
 }

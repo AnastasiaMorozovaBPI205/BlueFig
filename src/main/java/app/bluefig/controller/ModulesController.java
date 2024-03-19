@@ -2,10 +2,7 @@ package app.bluefig.controller;
 
 import app.bluefig.MapStructMapper;
 import app.bluefig.dto.ModuleWithParametersDTO;
-import app.bluefig.entity.ModuleFillInJpa;
-import app.bluefig.entity.ModuleJpa;
-import app.bluefig.entity.QuestionaryAnswerJpa;
-import app.bluefig.entity.ParameterJpa;
+import app.bluefig.entity.*;
 import app.bluefig.model.*;
 import app.bluefig.model.Questionary;
 import app.bluefig.service.*;
@@ -13,10 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @CrossOrigin(origins = "http://localhost:8080")
 @RestController
@@ -47,30 +41,8 @@ public class ModulesController {
         return getAllModules();
     }
 
-    private List<ModuleWithParametersDTO> getAllModules() {
-        List<ParameterJpa> parametersJpas = parameterService.findParametersJpa();
-        List<ModuleJpa> moduleJpas = moduleService.findModulesJpa();
-        List<ModuleWithParametersDTO> moduleWithParametersDTOS = new ArrayList<>();
-
-        for (ModuleJpa moduleJpa : moduleJpas) {
-            ModuleWithParametersDTO moduleWithParametersDTO = new ModuleWithParametersDTO();
-            moduleWithParametersDTO.setId(moduleJpa.getId());
-            moduleWithParametersDTO.setName(moduleJpa.getName());
-
-            List<Parameter> parameterList = new ArrayList<>();
-            for (ParameterJpa parameterJpa : parametersJpas) {
-                if (parameterJpa.getModuleId().equals(moduleJpa.getId())) {
-                    parameterList.add(mapper.ParameterJpaToParameter(parameterJpa));
-                }
-            }
-            moduleWithParametersDTO.setParameterList(parameterList);
-        }
-
-        return moduleWithParametersDTOS;
-    }
-
-    @PostMapping("/module")
-    public void addModule(@RequestBody HashMap<String, Object> data) {
+    @PostMapping("/questionary")
+    public void addQuestionary(@RequestBody HashMap<String, Object> data) {
         String moduleId = data.get("moduleId").toString();
         int frequency = Integer.parseInt(data.get("frequency").toString());
         String patientId = data.get("patientId").toString();
@@ -78,6 +50,8 @@ public class ModulesController {
         UUID questionaryId = UUID.randomUUID();
 
         questionaryService.addQuestionary(questionaryId.toString(), doctorId, patientId, moduleId, frequency);
+
+        System.out.println("questionary added successfully");
     }
 
     @DeleteMapping("/questionary/{questionaryId}")
@@ -91,7 +65,7 @@ public class ModulesController {
         questionaryService.updateQuestionaryFrequency(questionaryId, Integer.parseInt(frequency));
     }
 
-    @GetMapping("/module/{patient_id}/{doctor_id}")
+    @GetMapping("/module/{patientId}/{doctorId}")
     public List<ModuleWithParametersDTO> findModulesByPatientDoctorIds(@PathVariable String patientId,
                                                                        @PathVariable String doctorId) {
         List<Questionary> questionaries = mapper.ModuleJpasToModules(questionaryService.findQuestionaryJpaByPatientDoctorIds(doctorId, patientId));
@@ -110,16 +84,30 @@ public class ModulesController {
         return modulesForPatient;
     }
 
-    @GetMapping("/module/gastro_label/{parameter_id}")
+    @GetMapping("/module/gastroLabel/{parameterId}")
     public List<GastroLabel> findGastroParameters(@PathVariable String parameterId) {
         return mapper.GastroLabelJpasToGastroLabels(gastroLabelService.findGastroLabelByParameter(parameterId));
     }
 
-    @PostMapping("moduleFillIn")
+    @PostMapping("/moduleFillIn")
     public void addModuleFillIn(@RequestBody HashMap<String, Object> data) {
-        List<QuestionaryAnswerJpa> answerJpas = (List<QuestionaryAnswerJpa>) data.get("fillIn");
+        List<LinkedHashMap<String, Object>> list = (List<LinkedHashMap<String, Object>>) data.get("fillIn");
+        List<QuestionaryAnswerJpa> answerJpas = new ArrayList<>();
+
+        for (LinkedHashMap<String, Object> hm : list) {
+            QuestionaryAnswerJpa questionaryAnswerJpa = new QuestionaryAnswerJpa();
+            questionaryAnswerJpa.setValue(hm.get("value").toString());
+
+            QuestionaryAnswerIdJpa questionaryAnswerIdJpa = new QuestionaryAnswerIdJpa();
+            LinkedHashMap<String, Object> hm2 = (LinkedHashMap<String, Object>) hm.get("answerIdJpa");
+            questionaryAnswerIdJpa.setParameterId(hm2.get("parameterId").toString());
+            questionaryAnswerJpa.setAnswerIdJpa(questionaryAnswerIdJpa);
+
+            answerJpas.add(questionaryAnswerJpa);
+        }
+
         String questionaryId = data.get("questionaryId").toString();
-        LocalDateTime dateTime = (LocalDateTime) data.get("datetime");
+        LocalDateTime dateTime = LocalDateTime.parse(data.get("datetime").toString());
         UUID fillInId = UUID.randomUUID();
 
         moduleFillInService.addModuleFillIn(fillInId.toString(), questionaryId, dateTime);
@@ -129,9 +117,9 @@ public class ModulesController {
         }
     }
 
-    @GetMapping("/moduleFillIn/{patient_id}/{doctor_id}")
+    @GetMapping("/moduleFillIn/{patientId}/{doctorId}")
     public List<ModuleWithParametersDTO>  findModuleFillInsByPatientDoctorIds(@PathVariable String patientId,
-                                                                                        @PathVariable String doctorId) {
+                                                                              @PathVariable String doctorId) {
         List<Questionary> questionaries = mapper.ModuleJpasToModules(questionaryService.findQuestionaryJpaByPatientDoctorIds(doctorId, patientId));
         List<ModuleWithParametersDTO> modules = getAllModules();
 
@@ -190,5 +178,27 @@ public class ModulesController {
         return "";
     }
 
+    private List<ModuleWithParametersDTO> getAllModules() {
+        List<ParameterJpa> parametersJpas = parameterService.findParametersJpa();
+        List<ModuleJpa> moduleJpas = moduleService.findModulesJpa();
+        List<ModuleWithParametersDTO> moduleWithParametersDTOS = new ArrayList<>();
 
+        for (ModuleJpa moduleJpa : moduleJpas) {
+            ModuleWithParametersDTO moduleWithParametersDTO = new ModuleWithParametersDTO();
+            moduleWithParametersDTO.setId(moduleJpa.getId());
+            moduleWithParametersDTO.setName(moduleJpa.getName());
+
+            List<Parameter> parameterList = new ArrayList<>();
+            for (ParameterJpa parameterJpa : parametersJpas) {
+                if (parameterJpa.getModuleId().equals(moduleJpa.getId())) {
+                    parameterList.add(mapper.ParameterJpaToParameter(parameterJpa));
+                }
+            }
+            moduleWithParametersDTO.setParameterList(parameterList);
+
+            moduleWithParametersDTOS.add(moduleWithParametersDTO);
+        }
+
+        return moduleWithParametersDTOS;
+    }
 }

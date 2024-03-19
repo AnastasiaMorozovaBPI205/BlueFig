@@ -27,7 +27,6 @@ public class UserTest {
     private MockMvc mockMvc;
     @MockBean
     private UserServiceImpl service;
-
     @MockBean
     private MapStructMapper mapper;
 

@@ -68,7 +68,8 @@ public class ModulesController {
     @GetMapping("/module/{patientId}/{doctorId}")
     public List<ModuleWithParametersDTO> findModulesByPatientDoctorIds(@PathVariable String patientId,
                                                                        @PathVariable String doctorId) {
-        List<Questionary> questionaries = mapper.ModuleJpasToModules(questionaryService.findQuestionaryJpaByPatientDoctorIds(doctorId, patientId));
+        List<Questionary> questionaries = mapper.ModuleJpasToModules(questionaryService
+                .findQuestionaryJpaByPatientDoctorIds(doctorId, patientId));
         List<ModuleWithParametersDTO> modules = getAllModules();
 
         List<ModuleWithParametersDTO> modulesForPatient = new ArrayList<>();

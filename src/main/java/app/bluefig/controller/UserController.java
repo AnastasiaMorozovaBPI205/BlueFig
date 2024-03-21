@@ -122,4 +122,24 @@ public class UserController {
     public void linkPatientToDoctor(@PathVariable String patientId, @PathVariable String doctorId) {
         userService.linkPatientToDoctor(patientId, doctorId);
     }
+
+    /**
+     * Поиск всех пациентов.
+     * @return пациенты
+     */
+    @GetMapping("/doctors_list")
+    public List<User> getDoctors() {
+        List<UserJpa> userJpas = userService.findDoctors();
+        return mapper.UserJpasToUsers(userJpas);
+    }
+
+    /**
+     * Поиск всех врачей.
+     * @return врачи
+     */
+    @GetMapping("/patients_list")
+    public List<User> getPatients() {
+        List<UserJpa> userJpas = userService.findPatients();
+        return mapper.UserJpasToUsers(userJpas);
+    }
 }

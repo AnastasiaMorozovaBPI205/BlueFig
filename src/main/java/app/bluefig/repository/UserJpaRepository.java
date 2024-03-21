@@ -42,4 +42,16 @@ public interface UserJpaRepository extends JpaRepository<UserJpa, String> {
             "join doctor_watch on user.id = doctor_watch.doctor_id " +
             "where doctor_watch.patient_id = :patient_id", nativeQuery = true)
     List<UserJpa> findPatientsDoctorsJpa(@Param("patient_id") String patientId);
+
+    @Query(value = "select user.id, user.username, user.firstname, user.lastname, user.email, user.password_hash, " +
+            "user.role_id, user.birthday, user.sex, user.fathername from user " +
+            "join user_role on user.role_id = user_role.id " +
+            "where user_role.name = 'doctor'", nativeQuery = true)
+    List<UserJpa> findDoctorsJpa();
+
+    @Query(value = "select user.id, user.username, user.firstname, user.lastname, user.email, user.password_hash, " +
+            "user.role_id, user.birthday, user.sex, user.fathername from user " +
+            "join user_role on user.role_id = user_role.id " +
+            "where user_role.name = 'patient'", nativeQuery = true)
+    List<UserJpa> findPatientsJpa();
 }

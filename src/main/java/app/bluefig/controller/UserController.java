@@ -34,8 +34,16 @@ public class UserController {
         String sex = data.get("sex");
         String fathername = data.get("fathername");
         String roleId = data.get("roleId");
-
         String password = data.get("password");
+
+        if (username == null || firstname == null || lastname == null || email == null
+                || birthday == null || sex == null || fathername == null || roleId == null
+                || password == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Не заполнены поля."
+            );
+        }
+
         String passwordHash = String.valueOf(password.hashCode());
 
         userService.addUserList(username, firstname, lastname, fathername, email, passwordHash, roleId, birthday, sex);
@@ -78,6 +86,12 @@ public class UserController {
      */
     @GetMapping("/user/{id}")
     public User getUserById(@PathVariable String id) {
+        if (id == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Не заполнены поля."
+            );
+        }
+
         UserJpa userJpa = userService.findUserJpaById(id);
         return mapper.UserJpaToUser(userJpa);
     }
@@ -88,6 +102,12 @@ public class UserController {
      */
     @DeleteMapping("/user/{id}")
     public void deleteUserById(@PathVariable String id) {
+        if (id == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Не заполнены поля."
+            );
+        }
+
         userService.deleteUserJpa(id);
     }
 
@@ -98,6 +118,12 @@ public class UserController {
      */
     @GetMapping("/patients_list/{doctorId}")
     public List<User> getDoctorsPatients(@PathVariable String doctorId) {
+        if (doctorId == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Не заполнены поля."
+            );
+        }
+
         List<UserJpa> userJpas = userService.findDoctorsPatientsJpa(doctorId);
         return mapper.UserJpasToUsers(userJpas);
     }
@@ -109,6 +135,12 @@ public class UserController {
      */
     @GetMapping("/doctors_list/{patientId}")
     public List<User> getPatientsDoctors(@PathVariable String patientId) {
+        if (patientId == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Не заполнены поля."
+            );
+        }
+
         List<UserJpa> userJpas = userService.findPatientsDoctorsJpa(patientId);
         return mapper.UserJpasToUsers(userJpas);
     }
@@ -120,6 +152,12 @@ public class UserController {
      */
     @PostMapping("/link_patient/{patientId}/{doctorId}")
     public void linkPatientToDoctor(@PathVariable String patientId, @PathVariable String doctorId) {
+        if (patientId == null || doctorId == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Не заполнены поля."
+            );
+        }
+
         userService.linkPatientToDoctor(patientId, doctorId);
     }
 

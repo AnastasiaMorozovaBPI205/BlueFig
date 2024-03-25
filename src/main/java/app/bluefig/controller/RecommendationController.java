@@ -5,7 +5,9 @@ import app.bluefig.entity.RecommendationJpa;
 import app.bluefig.model.Recommendation;
 import app.bluefig.service.RecommendationServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -29,6 +31,12 @@ public class RecommendationController {
         String patientId = data.get("patientId");
         String doctorId = data.get("doctorId");
         String recommendation = data.get("recommendation");
+
+        if (patientId == null || doctorId == null || recommendation == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Не заполнены поля."
+            );
+        }
 
         recommendationService.addRecommendation(patientId, doctorId, LocalDateTime.now(), recommendation);
         System.out.println("recommendation added successfully");

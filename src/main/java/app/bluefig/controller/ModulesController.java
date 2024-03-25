@@ -7,7 +7,9 @@ import app.bluefig.model.*;
 import app.bluefig.model.Questionary;
 import app.bluefig.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -47,6 +49,13 @@ public class ModulesController {
         int frequency = Integer.parseInt(data.get("frequency").toString());
         String patientId = data.get("patientId").toString();
         String doctorId = data.get("doctorId").toString();
+
+        if (patientId == null || doctorId == null || data.get("frequency").toString() == null || moduleId == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Не заполнены поля."
+            );
+        }
+
         UUID questionaryId = UUID.randomUUID();
 
         questionaryService.addQuestionary(questionaryId.toString(), doctorId, patientId, moduleId, frequency);
@@ -56,18 +65,36 @@ public class ModulesController {
 
     @DeleteMapping("/questionary/{questionaryId}")
     public void deleteQuestionary(@PathVariable String questionaryId) {
+        if (questionaryId == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Не заполнены поля."
+            );
+        }
+
         questionaryService.deleteQuestionaryById(questionaryId);
         // TODO: удалить questionaryfillin questionaryanswer ?
     }
 
     @PutMapping("/questionary/{questionaryId}/{frequency}")
     public void changeQuestionaryFrequency(@PathVariable String questionaryId, @PathVariable String frequency) {
+        if (questionaryId == null || frequency == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Не заполнены поля."
+            );
+        }
+
         questionaryService.updateQuestionaryFrequency(questionaryId, Integer.parseInt(frequency));
     }
 
     @GetMapping("/module/{patientId}/{doctorId}")
     public List<ModuleWithParametersDTO> findModulesByPatientDoctorIds(@PathVariable String patientId,
                                                                        @PathVariable String doctorId) {
+        if (patientId == null || doctorId == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Не заполнены поля."
+            );
+        }
+
         List<Questionary> questionaries = mapper.ModuleJpasToModules(questionaryService
                 .findQuestionaryJpaByPatientDoctorIds(doctorId, patientId));
         List<ModuleWithParametersDTO> modules = getAllModules();
@@ -87,21 +114,36 @@ public class ModulesController {
 
     @GetMapping("/module/gastroLabel/{parameterId}")
     public List<GastroLabel> findGastroParameters(@PathVariable String parameterId) {
+        if (parameterId == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Не заполнены поля."
+            );
+        }
+
         return mapper.GastroLabelJpasToGastroLabels(gastroLabelService.findGastroLabelByParameter(parameterId));
     }
 
     @PostMapping("/moduleFillIn")
     public void addModuleFillIn(@RequestBody HashMap<String, Object> data) {
+        if (data.get("fillIn") == null || data.get("questionaryId") == null || data.get("datetime") == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Не заполнены поля."
+            );
+        }
+
         List<LinkedHashMap<String, Object>> list = (List<LinkedHashMap<String, Object>>) data.get("fillIn");
         List<QuestionaryAnswerJpa> answerJpas = new ArrayList<>();
 
         for (LinkedHashMap<String, Object> hm : list) {
             QuestionaryAnswerJpa questionaryAnswerJpa = new QuestionaryAnswerJpa();
-            questionaryAnswerJpa.setValue(hm.get("value").toString());
+            String value = hm.get("value").toString() == null ? "" : hm.get("value").toString();
+            questionaryAnswerJpa.setValue(value);
 
             QuestionaryAnswerIdJpa questionaryAnswerIdJpa = new QuestionaryAnswerIdJpa();
-            LinkedHashMap<String, Object> hm2 = (LinkedHashMap<String, Object>) hm.get("answerIdJpa");
-            questionaryAnswerIdJpa.setParameterId(hm2.get("parameterId").toString());
+            LinkedHashMap<String, Object> map = hm.get("answerIdJpa") == null ? new LinkedHashMap<>()
+                    : (LinkedHashMap<String, Object>) hm.get("answerIdJpa");
+            String parameterId = map.get("parameterId").toString() == null ? "" : map.get("parameterId").toString();
+            questionaryAnswerIdJpa.setParameterId(parameterId);
             questionaryAnswerJpa.setAnswerIdJpa(questionaryAnswerIdJpa);
 
             answerJpas.add(questionaryAnswerJpa);
@@ -121,6 +163,12 @@ public class ModulesController {
     @GetMapping("/moduleFillIn/{patientId}/{doctorId}")
     public List<ModuleWithParametersDTO>  findModuleFillInsByPatientDoctorIds(@PathVariable String patientId,
                                                                               @PathVariable String doctorId) {
+        if (patientId == null || doctorId == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Не заполнены поля."
+            );
+        }
+
         List<Questionary> questionaries = mapper.ModuleJpasToModules(questionaryService.findQuestionaryJpaByPatientDoctorIds(doctorId, patientId));
         List<ModuleWithParametersDTO> modules = getAllModules();
 

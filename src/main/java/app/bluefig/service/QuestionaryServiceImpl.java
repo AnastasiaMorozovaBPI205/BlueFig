@@ -31,4 +31,9 @@ public class QuestionaryServiceImpl implements QuestionaryService {
     public void updateQuestionaryFrequency(String id, int frequency) {
         questionaryJpaRepository.updateQuestionaryFrequency(id, frequency);
     }
+
+    @Override
+    public List<QuestionaryJpa> findQuestionaryJpaByPatientId(String patientId) {
+        return questionaryJpaRepository.findQuestionaryJpaByPatientId(patientId);
+    }
 }

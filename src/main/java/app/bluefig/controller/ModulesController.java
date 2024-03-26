@@ -112,6 +112,31 @@ public class ModulesController {
         return modulesForPatient;
     }
 
+    @GetMapping("/module/{patientId}")
+    public List<ModuleWithParametersDTO> findModulesByPatientId(@PathVariable String patientId) {
+        if (patientId == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Не заполнены поля."
+            );
+        }
+
+        List<Questionary> questionaries = mapper.ModuleJpasToModules(questionaryService
+                .findQuestionaryJpaByPatientId(patientId));
+        List<ModuleWithParametersDTO> modules = getAllModules();
+
+        List<ModuleWithParametersDTO> modulesForPatient = new ArrayList<>();
+        for (Questionary questionary : questionaries) {
+            for (ModuleWithParametersDTO module : modules) {
+                if (questionary.getModuleId().equals(module.getId())) {
+                    module.setFrequency(questionary.getFrequency());
+                    modulesForPatient.add(module);
+                }
+            }
+        }
+
+        return modulesForPatient;
+    }
+
     @GetMapping("/module/gastroLabel/{parameterId}")
     public List<GastroLabel> findGastroParameters(@PathVariable String parameterId) {
         if (parameterId == null) {

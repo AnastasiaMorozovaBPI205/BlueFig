@@ -11,4 +11,5 @@ public interface QuestionaryService {
     void deleteQuestionaryById (String questionaryId);
     void updateQuestionaryFrequency(String id, int frequency);
     List<QuestionaryJpa> findQuestionaryJpaByPatientId(String patientId);
+    QuestionaryJpa findQuestionaryById(String questionaryId);
 }

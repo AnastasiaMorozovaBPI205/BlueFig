@@ -28,4 +28,6 @@ public interface MapStructMapper {
     GastroLabel GastroLabelJpaToGastroLabel (GastroLabelJpa gastroLabelJpa);
     List<GastroLabel> GastroLabelJpasToGastroLabels (List<GastroLabelJpa> gastroLabelJpa);
 
+    Notification NotificationJpaToNotification(NotificationJpa NotificationJpa);
+    List<Notification> NotificationJpasToNotifications(List<NotificationJpa> NotificationJpas);
 }

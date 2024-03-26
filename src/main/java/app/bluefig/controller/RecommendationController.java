@@ -3,6 +3,7 @@ package app.bluefig.controller;
 import app.bluefig.MapStructMapper;
 import app.bluefig.entity.RecommendationJpa;
 import app.bluefig.model.Recommendation;
+import app.bluefig.service.NotificationServiceImpl;
 import app.bluefig.service.RecommendationServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,9 @@ import java.util.List;
 public class RecommendationController {
     @Autowired
     RecommendationServiceImpl recommendationService;
+
+    @Autowired
+    NotificationServiceImpl notificationService;
 
     @Autowired
     private MapStructMapper mapper;
@@ -39,6 +43,7 @@ public class RecommendationController {
         }
 
         recommendationService.addRecommendation(patientId, doctorId, LocalDateTime.now(), recommendation);
+        notificationService.addNotification(patientId, "У вас новая рекомендация от врача!", LocalDateTime.now());
         System.out.println("recommendation added successfully");
     }
 

@@ -38,6 +38,9 @@ public class ModulesController {
     @Autowired
     private ModuleServiceImpl moduleService;
 
+    @Autowired
+    NotificationServiceImpl notificationService;
+
     @GetMapping("/parameters")
     public List<ModuleWithParametersDTO> getParameters() {
         return getAllModules();
@@ -60,6 +63,7 @@ public class ModulesController {
 
         questionaryService.addQuestionary(questionaryId.toString(), doctorId, patientId, moduleId, frequency);
 
+        notificationService.addNotification(patientId, "Вам добавлен новый модуль к заполнению!", LocalDateTime.now());
         System.out.println("questionary added successfully");
     }
 
@@ -84,6 +88,10 @@ public class ModulesController {
         }
 
         questionaryService.updateQuestionaryFrequency(questionaryId, Integer.parseInt(frequency));
+        QuestionaryJpa questionaryJpa = questionaryService.findQuestionaryById(questionaryId);
+        notificationService.addNotification(questionaryJpa.getPatientId(),
+                "У модуля изменилась частота заполнения!", LocalDateTime.now());
+
     }
 
     @GetMapping("/module/{patientId}/{doctorId}")

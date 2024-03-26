@@ -3,6 +3,7 @@ package app.bluefig.controller;
 import app.bluefig.MapStructMapper;
 import app.bluefig.entity.UserJpa;
 import app.bluefig.model.User;
+import app.bluefig.service.NotificationServiceImpl;
 import app.bluefig.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 
@@ -18,6 +20,10 @@ import java.util.List;
 public class UserController {
     @Autowired
     private UserServiceImpl userService;
+
+    @Autowired
+    NotificationServiceImpl notificationService;
+
     @Autowired
     private MapStructMapper mapper;
 
@@ -159,6 +165,18 @@ public class UserController {
         }
 
         userService.linkPatientToDoctor(patientId, doctorId);
+
+        UserJpa doctor = userService.findUserJpaById(doctorId);
+        String doctorName = doctor.getLastname() + " " + doctor.getFirstname() + " " + doctor.getFathername();
+
+        UserJpa patient = userService.findUserJpaById(patientId);
+        String patientName = patient.getLastname() + " " + patient.getFirstname() + " " + patient.getFathername();
+
+        notificationService.addNotification(doctorId, "К Вам прикрепили нового пациента! ФИО: " + patientName + ".",
+                LocalDateTime.now());
+
+        notificationService.addNotification(patientId, "К Вам прикрепили нового врача! ФИО: " + doctorName + ".",
+                LocalDateTime.now());
     }
 
     /**

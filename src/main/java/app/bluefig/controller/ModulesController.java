@@ -76,7 +76,6 @@ public class ModulesController {
         }
 
         questionaryService.deleteQuestionaryById(questionaryId);
-        // TODO: удалить questionaryfillin questionaryanswer ?
     }
 
     @PutMapping("/questionary/{questionaryId}/{frequency}")
@@ -248,6 +247,31 @@ public class ModulesController {
         }
 
         return patientsFillIns;
+    }
+
+    @GetMapping("/statistics/{moduleId}/{patientId}")
+    public HashMap<String, HashMap<LocalDateTime, Object>> getStatistics(@PathVariable String moduleId,
+                                                                         @PathVariable String patientId) {
+        HashMap<String, HashMap<LocalDateTime, Object>> graphs = new HashMap<>();
+
+        List<ModuleFillInJpa> fillIns = moduleFillInService.findModulesFillInJpaByPatientIdModuleId(moduleId, patientId);
+        for (ModuleFillInJpa fillIn : fillIns) {
+            List<QuestionaryAnswerJpa> questionaryAnswerJpas = questionaryAnswerService.findFieldAnswers(fillIn.getId());
+            for (QuestionaryAnswerJpa answer : questionaryAnswerJpas) {
+                ParameterJpa parameterJpa = parameterService.findParameterJpaById(answer.getAnswerIdJpa().getParameterId());
+                if (parameterJpa == null) {
+                    continue;
+                }
+
+                if (!graphs.containsKey(parameterJpa.getName())) {
+                    graphs.put(parameterJpa.getName(), new HashMap<>());
+                }
+
+                graphs.get(parameterJpa.getName()).put(fillIn.getDatetime(), answer.getValue());
+            }
+        }
+
+        return graphs;
     }
 
     private String getModuleIdFromQuestionary(List<Questionary> questionaries, String questionaryId) {

@@ -21,7 +21,13 @@ public class ModulesController {
     private MapStructMapper mapper;
 
     @Autowired
+    private ProductServiceImpl productService;
+
+    @Autowired
     private ParameterServiceImpl parameterService;
+
+    @Autowired
+    private FormulaServiceImpl formulaService;
 
     @Autowired
     private QuestionaryServiceImpl questionaryService;
@@ -272,6 +278,21 @@ public class ModulesController {
         }
 
         return graphs;
+    }
+
+    @GetMapping("/formula")
+    public List<String> getFormulaNames() {
+        return formulaService.findFormulaNames();
+    }
+
+    @GetMapping("/productGroup")
+    public List<String> getProductGroups() {
+        return productService.findProductGroups();
+    }
+
+    @GetMapping("/products/{productGroup}")
+    public List<String> getProducts(@PathVariable String productGroup) {
+        return productService.findProductsInGroup(productGroup);
     }
 
     private String getModuleIdFromQuestionary(List<Questionary> questionaries, String questionaryId) {

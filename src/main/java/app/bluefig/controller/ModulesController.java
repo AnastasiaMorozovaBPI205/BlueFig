@@ -30,6 +30,9 @@ public class ModulesController {
     private FormulaServiceImpl formulaService;
 
     @Autowired
+    private ProductGroupServiceImpl productGroupService;
+
+    @Autowired
     private QuestionaryServiceImpl questionaryService;
 
     @Autowired
@@ -47,9 +50,28 @@ public class ModulesController {
     @Autowired
     NotificationServiceImpl notificationService;
 
+    @Autowired
+    DoctorParameterService doctorParameterService;
+
+    @Autowired
+    DoctorParameterLabelServiceImpl doctorParameterLabelService;
+
+    @Autowired
+    DoctorParameterFillInServiceImpl doctorParameterFillInService;
+
     @GetMapping("/parameters")
     public List<ModuleWithParametersDTO> getParameters() {
         return getAllModules();
+    }
+
+    @GetMapping("/doctorParameters/{moduleId}")
+    public List<DoctorParameter> getDoctorParameters(@PathVariable String moduleId) {
+        return mapper.DoctorParametersJpaToDoctorParameters(doctorParameterService.findDoctorParameterJpasByModuleId(moduleId));
+    }
+
+    @GetMapping("/doctorParametersLabels/{parameterId}")
+    public List<DoctorParameterLabel> getDoctorParameterLabels(@PathVariable String parameterId) {
+        return mapper.DoctorParameterLabelJpasToDoctorParameterLabels(doctorParameterLabelService.findDoctorParameterJpas(parameterId));
     }
 
     @PostMapping("/questionary")
@@ -68,6 +90,15 @@ public class ModulesController {
         UUID questionaryId = UUID.randomUUID();
 
         questionaryService.addQuestionary(questionaryId.toString(), doctorId, patientId, moduleId, frequency);
+
+        List<LinkedHashMap<String, Object>> list = (List<LinkedHashMap<String, Object>>) data.get("doctorParametersFillIn");
+        for (LinkedHashMap<String, Object> hm : list) {
+            String value = hm.get("value").toString() == null ? "" : hm.get("value").toString();
+            String parameterId = hm.get("parameterId").toString() == null ? "" : hm.get("parameterId").toString();
+
+            doctorParameterFillInService.addDoctorParameterFillIn(String.valueOf(questionaryId),
+                    parameterId, value);
+        }
 
         notificationService.addNotification(patientId, "Вам добавлен новый модуль к заполнению!", LocalDateTime.now());
         System.out.println("questionary added successfully");
@@ -123,6 +154,29 @@ public class ModulesController {
         }
 
         return modulesForPatient;
+    }
+
+    @GetMapping("/moduleParameters/{questionaryId}")
+    public List<DoctorParameterFillIn> findModulesParametersByPatientDoctorIds(@PathVariable String questionaryId) {
+        if (questionaryId == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Не заполнены поля."
+            );
+        }
+
+        List<DoctorParameterFillInJpa> list = doctorParameterFillInService.findDoctorParameterFillInJpas(questionaryId);
+        List<DoctorParameterFillIn> listMapped = new ArrayList<>();
+
+        for (DoctorParameterFillInJpa fillInJpa : list) {
+            DoctorParameterFillIn fillIn = new DoctorParameterFillIn();
+            fillIn.setParameterId(fillInJpa.getId().getParameterId());
+            fillIn.setQuestionaryId(fillInJpa.getId().getQuestionaryId());
+            fillIn.setValue(fillInJpa.getValue());
+
+            listMapped.add(fillIn);
+        }
+
+        return listMapped;
     }
 
     @GetMapping("/module/{patientId}")
@@ -286,13 +340,13 @@ public class ModulesController {
     }
 
     @GetMapping("/productGroup")
-    public List<String> getProductGroups() {
-        return productService.findProductGroups();
+    public List<ProductGroup> getProductGroups() {
+        return mapper.ProductGroupJpasToProductGroups(productGroupService.findProductGroups());
     }
 
-    @GetMapping("/products/{productGroup}")
-    public List<String> getProducts(@PathVariable String productGroup) {
-        return productService.findProductsInGroup(productGroup);
+    @GetMapping("/products/{productGroupId}")
+    public List<Product> getProducts(@PathVariable String productGroupId) {
+        return mapper.ProductJpasToProducts(productService.findProductsInGroup(productGroupId));
     }
 
     private String getModuleIdFromQuestionary(List<Questionary> questionaries, String questionaryId) {

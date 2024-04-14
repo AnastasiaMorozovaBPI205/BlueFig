@@ -30,4 +30,11 @@ public interface MapStructMapper {
 
     Notification NotificationJpaToNotification(NotificationJpa NotificationJpa);
     List<Notification> NotificationJpasToNotifications(List<NotificationJpa> NotificationJpas);
+    List<DoctorParameter> DoctorParametersJpaToDoctorParameters(List<DoctorParameterJpa> doctorParameterJpas);
+    DoctorParameterFillIn DoctorParameterFillInJpaToDoctorParameterFillIn(DoctorParameterFillInJpa doctorParameterFillInJpa);
+
+    List<DoctorParameterFillIn> DoctorParameterFillInJpasToDoctorParameterFillIn(List<DoctorParameterFillInJpa> doctorParameterFillInJpas);
+    List<ProductGroup> ProductGroupJpasToProductGroups(List<ProductGroupJpa> productGroupJpas);
+    List<Product> ProductJpasToProducts(List<ProductJpa> productJpas);
+    List<DoctorParameterLabel> DoctorParameterLabelJpasToDoctorParameterLabels(List<DoctorParameterLabelJpa> doctorParameterLabelJpas);
 }

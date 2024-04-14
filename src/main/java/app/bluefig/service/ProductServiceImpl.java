@@ -1,5 +1,6 @@
 package app.bluefig.service;
 
+import app.bluefig.entity.ProductJpa;
 import app.bluefig.repository.ProductJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,12 +13,7 @@ public class ProductServiceImpl implements ProductService{
     ProductJpaRepository productJpaRepository;
 
     @Override
-    public List<String> findProductGroups() {
-        return productJpaRepository.findProductGroups();
-    }
-
-    @Override
-    public List<String> findProductsInGroup(String groupName) {
-        return productJpaRepository.findProductsInGroup(groupName);
+    public List<ProductJpa> findProductsInGroup(String productGroupId) {
+        return productJpaRepository.findProductsInGroup(productGroupId);
     }
 }

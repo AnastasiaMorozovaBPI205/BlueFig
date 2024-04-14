@@ -1,11 +1,11 @@
 package app.bluefig.service;
 
+import app.bluefig.entity.ProductJpa;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
 public interface ProductService {
-    List<String> findProductGroups();
-    List<String> findProductsInGroup(String groupName);
+    List<ProductJpa> findProductsInGroup(String groupId);
 
 }

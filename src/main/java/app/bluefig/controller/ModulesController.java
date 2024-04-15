@@ -11,14 +11,24 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.*;
 
 @CrossOrigin(origins = "*")
 @RestController
 public class ModulesController {
+    private final String ANTHROPOMETRY = "a76d9dc1-de4f-11ee-8c0c-00f5f80cf8ae";
+    private final String DIET = "a8ff43df-de4f-11ee-8c0c-00f5f80cf8ae";
+    private final String FORMULAS = "aa35f36a-de4f-11ee-8c0c-00f5f80cf8ae";
+    private final String GASTRO_SYMPTOMS = "ab96ac6d-de4f-11ee-8c0c-00f5f80cf8ae";
+
     @Autowired
     private MapStructMapper mapper;
+
+    @Autowired
+    private UserServiceImpl userService;
 
     @Autowired
     private ProductServiceImpl productService;
@@ -58,6 +68,9 @@ public class ModulesController {
 
     @Autowired
     DoctorParameterFillInServiceImpl doctorParameterFillInService;
+
+    @Autowired
+    PatientHierarchyServiceImpl patientHierarchyService;
 
     @GetMapping("/parameters")
     public List<ModuleWithParametersDTO> getParameters() {
@@ -245,6 +258,8 @@ public class ModulesController {
         LocalDateTime dateTime = LocalDateTime.parse(data.get("datetime").toString());
         UUID fillInId = UUID.randomUUID();
 
+        changeNumberInHierarchy(answerJpas, questionaryId);
+
         moduleFillInService.addModuleFillIn(fillInId.toString(), questionaryId, dateTime);
 
         for (QuestionaryAnswerJpa answerJpa : answerJpas) {
@@ -253,7 +268,7 @@ public class ModulesController {
     }
 
     @GetMapping("/moduleFillIn/{patientId}/{doctorId}")
-    public List<ModuleWithParametersDTO>  findModuleFillInsByPatientDoctorIds(@PathVariable String patientId,
+    public List<ModuleWithParametersDTO> findModuleFillInsByPatientDoctorIds(@PathVariable String patientId,
                                                                               @PathVariable String doctorId) {
         if (patientId == null || doctorId == null) {
             throw new ResponseStatusException(
@@ -261,7 +276,8 @@ public class ModulesController {
             );
         }
 
-        List<Questionary> questionaries = mapper.ModuleJpasToModules(questionaryService.findQuestionaryJpaByPatientDoctorIds(doctorId, patientId));
+        List<Questionary> questionaries = mapper.ModuleJpasToModules(
+                questionaryService.findQuestionaryJpaByPatientDoctorIds(doctorId, patientId));
         List<ModuleWithParametersDTO> modules = getAllModules();
 
         List<ModuleWithParametersDTO> patientsModules = new ArrayList<>();
@@ -348,6 +364,110 @@ public class ModulesController {
     public List<Product> getProducts(@PathVariable String productGroupId) {
         return mapper.ProductJpasToProducts(productService.findProductsInGroup(productGroupId));
     }
+
+    @GetMapping("/patientsHierarchy")
+    public List<User> getPatientsHierarchy() {
+        return mapper.UserJpasToUsers(patientHierarchyService.findSortedPatientHierarchyJpas());
+    }
+
+    private void changeNumberInHierarchy(List<QuestionaryAnswerJpa> answers, String questionaryId) {
+        int number = 0;
+
+        QuestionaryJpa questionary = questionaryService.findQuestionaryById(questionaryId);
+        String patientId = questionary.getPatientId();
+        String moduleId = questionary.getModuleId();
+
+        boolean isFeedbackTypeAutomatic = true;
+        List<DoctorParameterFillInJpa> doctorParameterFillInJpas = doctorParameterFillInService
+                .findDoctorParameterFillInJpas(questionaryId);
+        for (DoctorParameterFillInJpa doctorParameterFillInJpa : doctorParameterFillInJpas) {
+            if (doctorParameterFillInJpa.getValue().equals("Ручная обработка")) {
+                isFeedbackTypeAutomatic = false;
+                break;
+            }
+        }
+
+        PatientHierarchyJpa hierarchyJpa = patientHierarchyService.findPatientHierarchyJpaById(patientId);
+        if (hierarchyJpa != null) {
+            number += 1 + hierarchyJpa.getNumber(); // добавляем 1 за ожидание ответа и добавляем прошлый номер в иерархии
+        } else {
+            if (!isFeedbackTypeAutomatic) {
+                number = 1;
+            }
+        }
+
+        number += getNumberOfRedFlags(moduleId, answers, doctorParameterFillInJpas, patientId, questionaryId);
+
+        if (number > 0) {
+            patientHierarchyService.addPatientToHierarchy(patientId, number);
+        }
+    }
+
+    private int getNumberOfRedFlags(String moduleId, List<QuestionaryAnswerJpa> answers,
+                                    List<DoctorParameterFillInJpa> doctorParameters,
+                                    String patientId, String questionaryId) {
+        return switch (moduleId) {
+            case ANTHROPOMETRY -> getNumberOfRedFlagsAnthropometry(moduleId, answers, doctorParameters, patientId,
+                    questionaryId);
+            case DIET -> getNumberOfRedFlagsDiet(moduleId, answers, doctorParameters);
+            case FORMULAS -> getNumberOfRedFlagsFormulas(moduleId, answers, doctorParameters);
+            case GASTRO_SYMPTOMS -> getNumberOfRedFlagsGastroSymptoms(moduleId, answers, doctorParameters);
+            default -> 0;
+        };
+    }
+
+    private int getNumberOfRedFlagsAnthropometry(String moduleId, List<QuestionaryAnswerJpa> answers,
+                                                 List<DoctorParameterFillInJpa> doctorParameters,
+                                                 String patientId, String questionaryId) {
+        int numberOfRedFlags = 0;
+        UserJpa patient = userService.findUserJpaById(patientId);
+        int age = Period.between(patient.getBirthday(), LocalDate.now()).getYears();
+
+        // предыдущие ответы, отсортированные от самого раннего до самого позднего
+        List<ModuleFillInJpa> previousFillIns = moduleFillInService
+                .findModulesFillInJpaByPatientIdQuestionaryId(patientId, questionaryId);
+        List<List<QuestionaryAnswerJpa>> previousAnswers = new ArrayList<>();
+        for (ModuleFillInJpa moduleFillIn : previousFillIns) {
+            previousAnswers.add(questionaryAnswerService.findFieldAnswers(moduleFillIn.getId()));
+        }
+
+        for (DoctorParameterFillInJpa doctorParameter : doctorParameters) {
+            if (doctorParameter.getValue().equals("Стандарт")) {
+
+                break;
+            } else if (doctorParameter.getValue().equals("Снижение веса")) {
+
+                break;
+            } else if (doctorParameter.getValue().equals("Терапия нутритивного дефицита")) {
+
+                break;
+            }
+        }
+
+        return numberOfRedFlags;
+    }
+
+    private int getNumberOfRedFlagsDiet(String moduleId, List<QuestionaryAnswerJpa> answers,
+                                        List<DoctorParameterFillInJpa> doctorParameters) {
+        int numberOfRedFlags = 0;
+
+        return numberOfRedFlags;
+    }
+
+    private int getNumberOfRedFlagsFormulas(String moduleId, List<QuestionaryAnswerJpa> answers,
+                                            List<DoctorParameterFillInJpa> doctorParameters) {
+        int numberOfRedFlags = 0;
+
+        return numberOfRedFlags;
+    }
+
+    private int getNumberOfRedFlagsGastroSymptoms(String moduleId, List<QuestionaryAnswerJpa> answers,
+                                                  List<DoctorParameterFillInJpa> doctorParameters) {
+        int numberOfRedFlags = 0;
+
+        return numberOfRedFlags;
+    }
+
 
     private String getModuleIdFromQuestionary(List<Questionary> questionaries, String questionaryId) {
         for (Questionary questionary : questionaries) {

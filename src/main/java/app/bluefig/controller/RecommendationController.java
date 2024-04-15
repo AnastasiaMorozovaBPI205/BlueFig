@@ -4,6 +4,7 @@ import app.bluefig.MapStructMapper;
 import app.bluefig.entity.RecommendationJpa;
 import app.bluefig.model.Recommendation;
 import app.bluefig.service.NotificationServiceImpl;
+import app.bluefig.service.PatientHierarchyServiceImpl;
 import app.bluefig.service.RecommendationServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,9 @@ public class RecommendationController {
 
     @Autowired
     NotificationServiceImpl notificationService;
+
+    @Autowired
+    PatientHierarchyServiceImpl patientHierarchyService;
 
     @Autowired
     private MapStructMapper mapper;
@@ -43,6 +47,7 @@ public class RecommendationController {
         }
 
         recommendationService.addRecommendation(patientId, doctorId, LocalDateTime.now(), recommendation);
+        patientHierarchyService.deletePatientFromHierarchyById(patientId);
         notificationService.addNotification(patientId, "У вас новая рекомендация от врача!", LocalDateTime.now());
         System.out.println("recommendation added successfully");
     }

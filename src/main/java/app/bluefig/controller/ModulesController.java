@@ -464,18 +464,18 @@ public class ModulesController {
                                     List<DoctorParameterFillInJpa> doctorParameters,
                                     String patientId, String questionaryId) {
         return switch (moduleId) {
-            case ANTHROPOMETRY -> getNumberOfRedFlagsAnthropometry(moduleId, answers, doctorParameters, patientId,
+            case ANTHROPOMETRY -> getNumberOfRedFlagsAnthropometry(answers, doctorParameters, patientId,
                     questionaryId);
             case DIET -> getNumberOfRedFlagsDiet(moduleId, answers, doctorParameters);
             case FORMULAS -> getNumberOfRedFlagsFormulas(moduleId, answers, doctorParameters);
-            case GASTRO_SYMPTOMS -> getNumberOfRedFlagsGastroSymptoms(moduleId, answers, doctorParameters);
+            case GASTRO_SYMPTOMS -> getNumberOfRedFlagsGastroSymptoms(answers, doctorParameters);
             default -> 0;
         };
     }
 
-    private int getNumberOfRedFlagsAnthropometry(String moduleId, List<QuestionaryAnswerJpa> answers,
-                                                 List<DoctorParameterFillInJpa> doctorParameters,
-                                                 String patientId, String questionaryId) {
+    private int getNumberOfRedFlagsAnthropometry(List<QuestionaryAnswerJpa> answers,
+                                                 List<DoctorParameterFillInJpa> doctorParameters, String patientId,
+                                                 String questionaryId) {
         UserJpa patient = userService.findUserJpaById(patientId);
         int age = Period.between(patient.getBirthday(), LocalDate.now()).getYears();
 
@@ -581,13 +581,42 @@ public class ModulesController {
         return numberOfRedFlags;
     }
 
-    private int getNumberOfRedFlagsGastroSymptoms(String moduleId, List<QuestionaryAnswerJpa> answers,
+    private int getNumberOfRedFlagsGastroSymptoms(List<QuestionaryAnswerJpa> answers,
                                                   List<DoctorParameterFillInJpa> doctorParameters) {
         int numberOfRedFlags = 0;
+        final String VOMIT = "8632ea18-cc4a-11ee-8c0c-00f5f80cf8ae";
+        final String NAUSEA = "850657cb-cc4a-11ee-8c0c-00f5f80cf8ae";
+        final String APPETIT = "88a297ac-cc4a-11ee-8c0c-00f5f80cf8ae";
+        final String SKIN_RASH = "89e4f98c-cc4a-11ee-8c0c-00f5f80cf8ae";
+        final String BM_TYPE = "97cf3aa0-f2b6-11ee-88dc-00f5f80cf8ae";
+        final String BM_ADMIXTURE = "837e3f4f-cc4a-11ee-8c0c-00f5f80cf8ae";
+
+        for (QuestionaryAnswerJpa answer : answers) {
+            if (answer.getAnswerIdJpa().getParameterId().equals(VOMIT)) {
+                if (Integer.parseInt(answer.getValue()) >= 1) {
+                    numberOfRedFlags += 1;
+                }
+            } else if (answer.getAnswerIdJpa().getParameterId().equals(NAUSEA)) {
+                if (answer.getValue().equals("препятствует приему пищи")) {
+                    numberOfRedFlags += 1;
+                }
+            } else if (answer.getAnswerIdJpa().getParameterId().equals(APPETIT)) {
+                if (answer.getValue().equals("отсутствует")) {
+                    numberOfRedFlags += 1;
+                }
+            } else if (answer.getAnswerIdJpa().getParameterId().equals(SKIN_RASH)) {
+                if (answer.getValue().equals("да")) {
+                    numberOfRedFlags += 1;
+                }
+            } else if (answer.getAnswerIdJpa().getParameterId().equals(BM_TYPE)) {
+
+            } else if (answer.getAnswerIdJpa().getParameterId().equals(BM_ADMIXTURE)) {
+
+            }
+        }
 
         return numberOfRedFlags;
     }
-
 
     private String getModuleIdFromQuestionary(List<Questionary> questionaries, String questionaryId) {
         for (Questionary questionary : questionaries) {

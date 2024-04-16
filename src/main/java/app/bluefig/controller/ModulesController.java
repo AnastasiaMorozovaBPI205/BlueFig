@@ -476,11 +476,10 @@ public class ModulesController {
     private int getNumberOfRedFlagsAnthropometry(String moduleId, List<QuestionaryAnswerJpa> answers,
                                                  List<DoctorParameterFillInJpa> doctorParameters,
                                                  String patientId, String questionaryId) {
-        int numberOfRedFlags = 0;
         UserJpa patient = userService.findUserJpaById(patientId);
         int age = Period.between(patient.getBirthday(), LocalDate.now()).getYears();
 
-        // предыдущие ответы, отсортированные от самого раннего до самого позднего
+        // предыдущие ответы, отсортированные от самого позднего до самого раннего
         List<ModuleFillInJpa> previousFillIns = moduleFillInService
                 .findModulesFillInJpaByPatientIdQuestionaryId(patientId, questionaryId);
         List<List<QuestionaryAnswerJpa>> previousAnswers = new ArrayList<>();
@@ -488,20 +487,84 @@ public class ModulesController {
             previousAnswers.add(questionaryAnswerService.findFieldAnswers(moduleFillIn.getId()));
         }
 
-        for (DoctorParameterFillInJpa doctorParameter : doctorParameters) {
-            if (doctorParameter.getValue().equals("Стандарт")) {
+        final String WEIGHT = "7eb1c37f-cc4a-11ee-8c0c-00f5f80cf8ae";
 
-                break;
-            } else if (doctorParameter.getValue().equals("Снижение веса")) {
-
-                break;
-            } else if (doctorParameter.getValue().equals("Терапия нутритивного дефицита")) {
-
-                break;
+        int currentWeight = 0;
+        for (QuestionaryAnswerJpa answerJpa : answers) {
+            if (answerJpa.getAnswerIdJpa().getParameterId().equals(WEIGHT)) {
+                currentWeight = Integer.parseInt(answerJpa.getValue());
             }
         }
 
-        return numberOfRedFlags;
+        if (previousFillIns.isEmpty()) {
+            return 0;
+        }
+
+        label:
+        for (DoctorParameterFillInJpa doctorParameter : doctorParameters) {
+            switch (doctorParameter.getValue()) {
+                case "Стандарт":
+                    if (age < 1) {
+                        boolean weightDecreaseTimeIsWeek = true;
+                        for (int i = 0; i < previousAnswers.size(); ++i) {
+                            for (QuestionaryAnswerJpa answer : previousAnswers.get(i)) {
+                                if (answer.getAnswerIdJpa().getParameterId().equals(WEIGHT)
+                                        && Period.between(previousFillIns.get(i).getDatetime().toLocalDate(), LocalDate.now()).getDays() < 7
+                                        && currentWeight >= Integer.parseInt(answer.getValue())) {
+                                    weightDecreaseTimeIsWeek = false;
+                                    break;
+                                }
+                                currentWeight = Integer.parseInt(answer.getValue());
+                            }
+                        }
+
+                        if (weightDecreaseTimeIsWeek) {
+                            return 1;
+                        }
+                    } else {
+                        for (int i = 0; i < previousAnswers.size(); ++i) {
+                            for (QuestionaryAnswerJpa answer : previousAnswers.get(i)) {
+                                if (answer.getAnswerIdJpa().getParameterId().equals(WEIGHT)
+                                        && Period.between(previousFillIns.get(i).getDatetime().toLocalDate(), LocalDate.now()).getMonths() >= 1
+                                        && currentWeight <= Integer.parseInt(answer.getValue())) {
+                                    return 1;
+                                }
+                            }
+                        }
+                    }
+                    break label;
+                case "Снижение веса":
+                    for (QuestionaryAnswerJpa answer : previousAnswers.get(0)) {
+                        if (answer.getAnswerIdJpa().getParameterId().equals(WEIGHT)
+                                && currentWeight > Integer.parseInt(answer.getValue()) * 1.05) {
+                            return 1;
+                        }
+                    }
+                    break label;
+                case "Терапия нутритивного дефицита":
+                    for (int i = 0; i < previousAnswers.size(); ++i) {
+                        for (QuestionaryAnswerJpa answer : previousAnswers.get(i)) {
+                            if (answer.getAnswerIdJpa().getParameterId().equals(WEIGHT)
+                                    && Period.between(previousFillIns.get(i).getDatetime().toLocalDate(), LocalDate.now()).getDays() >= 7
+                                    && currentWeight <= Integer.parseInt(answer.getValue())) {
+                                return 1;
+                            }
+                        }
+                    }
+
+                    for (QuestionaryAnswerJpa answer : previousAnswers.get(0)) {
+                        if (answer.getAnswerIdJpa().getParameterId().equals(WEIGHT)
+                                && currentWeight < Integer.parseInt(answer.getValue()) * 0.95) {
+                            return 1;
+                        } else if (age < 1 && currentWeight < Integer.parseInt(answer.getValue())) {
+                            return 1;
+                        }
+                    }
+                    break label;
+            }
+        }
+
+        return 0;
     }
 
     private int getNumberOfRedFlagsDiet(String moduleId, List<QuestionaryAnswerJpa> answers,

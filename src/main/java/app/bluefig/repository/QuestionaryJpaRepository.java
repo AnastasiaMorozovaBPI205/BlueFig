@@ -29,4 +29,9 @@ public interface QuestionaryJpaRepository extends JpaRepository<QuestionaryJpa, 
 
     @Query(value = "select * from questionary where id = :id", nativeQuery = true)
     QuestionaryJpa findQuestionaryById(@Param("id") String questionaryId);
+
+    @Query(value = "select questionary.id from questionary where patient_id = :patient_id and" +
+            "module_id = :module_id", nativeQuery = true)
+    String findQuestionaryByPatientIdModuleId(@Param("patient_id") String patientId,
+                                              @Param("module_id") String moduleId);
 }

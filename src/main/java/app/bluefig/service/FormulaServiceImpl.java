@@ -15,4 +15,9 @@ public class FormulaServiceImpl implements FormulaService {
     public List<String> findFormulaNames() {
         return formulaJpaRepository.findFormulaNames();
     }
+
+    @Override
+    public String findFormulaByName(String name) {
+        return formulaJpaRepository.findFormulaByName(name);
+    }
 }

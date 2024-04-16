@@ -464,10 +464,9 @@ public class ModulesController {
                                     List<DoctorParameterFillInJpa> doctorParameters,
                                     String patientId, String questionaryId) {
         return switch (moduleId) {
-            case ANTHROPOMETRY -> getNumberOfRedFlagsAnthropometry(answers, doctorParameters, patientId,
-                    questionaryId);
-            case DIET -> getNumberOfRedFlagsDiet(moduleId, answers, doctorParameters);
-            case FORMULAS -> getNumberOfRedFlagsFormulas(moduleId, answers, doctorParameters);
+            case ANTHROPOMETRY -> getNumberOfRedFlagsAnthropometry(answers, doctorParameters, patientId, questionaryId);
+            case DIET -> getNumberOfRedFlagsDiet(answers, doctorParameters);
+            case FORMULAS -> getNumberOfRedFlagsFormulas(answers, doctorParameters, patientId);
             case GASTRO_SYMPTOMS -> getNumberOfRedFlagsGastroSymptoms(answers, doctorParameters);
             default -> 0;
         };
@@ -567,18 +566,103 @@ public class ModulesController {
         return 0;
     }
 
-    private int getNumberOfRedFlagsDiet(String moduleId, List<QuestionaryAnswerJpa> answers,
+    private int getNumberOfRedFlagsDiet(List<QuestionaryAnswerJpa> answers,
                                         List<DoctorParameterFillInJpa> doctorParameters) {
         int numberOfRedFlags = 0;
 
         return numberOfRedFlags;
     }
 
-    private int getNumberOfRedFlagsFormulas(String moduleId, List<QuestionaryAnswerJpa> answers,
-                                            List<DoctorParameterFillInJpa> doctorParameters) {
-        int numberOfRedFlags = 0;
+    private int getNumberOfRedFlagsFormulas(List<QuestionaryAnswerJpa> answers,
+                                            List<DoctorParameterFillInJpa> doctorParameters,
+                                            String patientId) {
+        final String MIXTURE_MASS = "75312e69-f9ee-11ee-88dc-00f5f80cf8ae";
+        final String FORMULA_NAME = "c67574a1-f8ec-11ee-88dc-00f5f80cf8ae";
+        final String WEIGHT = "7eb1c37f-cc4a-11ee-8c0c-00f5f80cf8ae";
+        final String HEIGHT = "80a45253-cc4a-11ee-8c0c-00f5f80cf8ae";
+        final String PERCENTAGE_DIFFERENCE = "31f92255-fa55-11ee-88dc-00f5f80cf8ae";
 
-        return numberOfRedFlags;
+        int mixtureMass = 0;
+        int calories = 0;
+        for (QuestionaryAnswerJpa answer : answers) {
+            if (answer.getAnswerIdJpa().getParameterId().equals(MIXTURE_MASS)) {
+                mixtureMass = Integer.parseInt(answer.getValue());
+            } else if (answer.getAnswerIdJpa().getParameterId().equals(FORMULA_NAME)) {
+                calories = Integer.parseInt(formulaService.findFormulaByName(answer.getValue()));
+            }
+        }
+
+        int factEnergy = mixtureMass * calories / 100;
+
+        UserJpa patient = userService.findUserJpaById(patientId);
+        int sex = patient.getSex().equals("женский") ? 1 : 0;
+        int age = Period.between(patient.getBirthday(), LocalDate.now()).getYears();
+
+        List<QuestionaryAnswerJpa> lastAnthropometryAnswer = getLastAnthropometryAnswer(patientId);
+        int weight = 0;
+        int height = 0;
+        for (QuestionaryAnswerJpa answer : lastAnthropometryAnswer) {
+            if (answer.getAnswerIdJpa().getParameterId().equals(WEIGHT)) {
+                weight = Integer.parseInt(answer.getValue());
+            } else if (answer.getAnswerIdJpa().getParameterId().equals(HEIGHT)) {
+                height = Integer.parseInt(answer.getValue());
+            }
+        }
+
+        double countedEnergy = getCountedEnergyShofield(age, sex, weight, height);
+
+        if (factEnergy == 0 || countedEnergy == 0) {
+            return 0;
+        }
+
+        double percentageDifference = (countedEnergy - factEnergy) / factEnergy * 100;
+        if (percentageDifference < 0) {
+            percentageDifference *= -1;
+        }
+
+        int percentageMaxDifference = 0;
+        for (DoctorParameterFillInJpa parameter : doctorParameters) {
+            if (parameter.getId().getParameterId().equals(PERCENTAGE_DIFFERENCE)) {
+                percentageMaxDifference = Integer.parseInt(parameter.getValue());
+                break;
+            }
+        }
+
+        if (percentageDifference > percentageMaxDifference) {
+            return 1;
+        }
+
+        return 0;
+    }
+
+    private double getCountedEnergyShofield(int age, int sex, int weight, int height) {
+        if (age <= 3 && sex == 0) {
+            return 16.25*weight + 1023.2*height - 413.5;
+        } else if (age > 3 && age <= 10 && sex == 0) {
+            return 16.97*weight + 161.8*height + 371.2;
+        } else if (age > 10 && sex == 0) {
+            return 8.365*weight + 465*height + 200;
+        } else if (age <= 3) {
+            return  0.167*weight + 1517.4*height - 617.6;
+        } else if (age <= 10) {
+            return  19.6*weight + 130.3*height + 414.9;
+        }
+
+        return 16.25*weight + 137.2*height + 515.5;
+    }
+
+    private List<QuestionaryAnswerJpa> getLastAnthropometryAnswer(String patientId) {
+        String questionaryId = questionaryService.findQuestionaryByPatientIdModuleId(patientId, ANTHROPOMETRY);
+
+        // предыдущие ответы, отсортированные от самого позднего до самого раннего
+        List<ModuleFillInJpa> previousFillIns = moduleFillInService
+                .findModulesFillInJpaByPatientIdQuestionaryId(patientId, questionaryId);
+        List<List<QuestionaryAnswerJpa>> previousAnswers = new ArrayList<>();
+        for (ModuleFillInJpa moduleFillIn : previousFillIns) {
+            previousAnswers.add(questionaryAnswerService.findFieldAnswers(moduleFillIn.getId()));
+        }
+
+        return previousAnswers.get(0);
     }
 
     private int getNumberOfRedFlagsGastroSymptoms(List<QuestionaryAnswerJpa> answers,

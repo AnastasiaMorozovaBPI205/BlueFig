@@ -12,4 +12,6 @@ public interface QuestionaryService {
     void updateQuestionaryFrequency(String id, int frequency);
     List<QuestionaryJpa> findQuestionaryJpaByPatientId(String patientId);
     QuestionaryJpa findQuestionaryById(String questionaryId);
+    String findQuestionaryByPatientIdModuleId(String patientId, String moduleId);
+
 }

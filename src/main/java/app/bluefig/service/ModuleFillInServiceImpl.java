@@ -32,4 +32,9 @@ public class ModuleFillInServiceImpl implements ModuleFillInService{
     public List<ModuleFillInJpa> findModulesFillInJpaByPatientIdQuestionaryId(String questionaryId, String patientId) {
         return moduleFillInJpaRepository.findModulesFillInJpaByPatientIdQuestionaryId(questionaryId, patientId);
     }
+
+    @Override
+    public List<ModuleFillInJpa> findModulesFillInJpaByPatientId(String patientId) {
+        return moduleFillInJpaRepository.findModulesFillInJpaByPatientId(patientId);
+    }
 }

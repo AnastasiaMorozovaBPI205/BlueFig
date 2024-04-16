@@ -23,6 +23,12 @@ public interface ModuleFillInJpaRepository extends JpaRepository<ModuleFillInJpa
     List<ModuleFillInJpa> findModulesFillInJpaByPatientDoctorIds(@Param("doctor_id") String doctorId,
                                                                  @Param("patient_id") String patientId);
 
+    @Query(value = "select questionary_fillin.id, questionary_fillin.questionary_id, questionary_fillin.datetime" +
+            " from questionary_fillin join questionary on questionary.id = questionary_fillin.questionary_id" +
+            " where questionary.patient_id = :patient_id",
+            nativeQuery = true)
+    List<ModuleFillInJpa> findModulesFillInJpaByPatientId(@Param("patient_id") String patientId);
+
     @Query(value = """
             select questionary_fillin.id, questionary_fillin.questionary_id, questionary_fillin.datetime\s
             from questionary_fillin\s

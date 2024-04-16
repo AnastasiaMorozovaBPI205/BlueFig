@@ -325,6 +325,63 @@ public class ModulesController {
         return patientsFillIns;
     }
 
+    @GetMapping("/moduleFillIn/{patientId}")
+    public List<ModuleWithParametersDTO> findModuleFillInsByPatientId(@PathVariable String patientId) {
+        if (patientId == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Не заполнены поля."
+            );
+        }
+
+        List<Questionary> questionaries = mapper.ModuleJpasToModules(
+                questionaryService.findQuestionaryJpaByPatientId(patientId));
+        List<ModuleWithParametersDTO> modules = getAllModules();
+
+        List<ModuleWithParametersDTO> patientsModules = new ArrayList<>();
+        for (Questionary questionary : questionaries) {
+            for (ModuleWithParametersDTO module : modules) {
+                if (questionary.getModuleId().equals(module.getId())) {
+                    module.setFrequency(questionary.getFrequency());
+                    patientsModules.add(module);
+                    break;
+                }
+            }
+        }
+
+        List<ModuleWithParametersDTO> patientsFillIns = new ArrayList<>();
+        List<ModuleFillInJpa> fillIns = moduleFillInService.findModulesFillInJpaByPatientId(patientId);
+
+        for (ModuleFillInJpa moduleFillInJpa : fillIns) {
+            ModuleWithParametersDTO module = new ModuleWithParametersDTO();
+
+            for (ModuleWithParametersDTO moduleWithParametersDTO : patientsModules) {
+                if (moduleWithParametersDTO.getId().equals(getModuleIdFromQuestionary(questionaries, moduleFillInJpa.getQuestionaryId()))) {
+                    module.setId(moduleWithParametersDTO.getId());
+                    module.setName(moduleWithParametersDTO.getName());
+                    module.setFrequency(moduleWithParametersDTO.getFrequency());
+                    module.setParameterList(moduleWithParametersDTO.getParameterList());
+                    break;
+                }
+            }
+
+            module.setDateTime(moduleFillInJpa.getDatetime());
+
+            List<QuestionaryAnswerJpa> questionaryAnswerJpas = questionaryAnswerService.findFieldAnswers(moduleFillInJpa.getId());
+            for (Parameter parameter : module.getParameterList()) {
+                for (QuestionaryAnswerJpa questionaryAnswerJpa : questionaryAnswerJpas) {
+                    if (parameter.getId().equals(questionaryAnswerJpa.getAnswerIdJpa().getParameterId())) {
+                        parameter.setValue(questionaryAnswerJpa.getValue());
+                        break;
+                    }
+                }
+            }
+
+            patientsFillIns.add(module);
+        }
+
+        return patientsFillIns;
+    }
+
     @GetMapping("/statistics/{moduleId}/{patientId}")
     public HashMap<String, HashMap<LocalDateTime, Object>> getStatistics(@PathVariable String moduleId,
                                                                          @PathVariable String patientId) {

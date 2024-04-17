@@ -20,4 +20,8 @@ public interface PatientHierarchyJpaRepository extends JpaRepository<PatientHier
     @Query(value = "insert into patient_hierarchy (patient_id, number) values (:patient_id, :number)",
             nativeQuery = true)
     void addPatientToHierarchy(@Param("patient_id") String patientId, @Param("number") int number);
+
+    @Query(value = "update patient_hierarchy set number = :number where patient_id = :patient_id",
+            nativeQuery = true)
+    void changePatientNumber(@Param("patient_id") String patientId, @Param("number") int number);
 }

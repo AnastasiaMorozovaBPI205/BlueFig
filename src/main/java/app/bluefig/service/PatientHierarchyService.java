@@ -11,5 +11,5 @@ public interface PatientHierarchyService {
     List<UserJpa> findSortedPatientHierarchyJpas();
     void deletePatientFromHierarchyById(String patientId);
     void addPatientToHierarchy(String patientId, int number);
-
+    void changePatientNumber(String patientId, int number);
 }

@@ -466,7 +466,11 @@ public class ModulesController {
         number += getNumberOfRedFlags(moduleId, answers, doctorParameterFillInJpas, patientId, questionaryId);
 
         if (number > 0) {
-            patientHierarchyService.addPatientToHierarchy(patientId, number);
+            if (hierarchyJpa == null) {
+                patientHierarchyService.addPatientToHierarchy(patientId, number);
+            } else {
+                patientHierarchyService.changePatientNumber(patientId, number);
+            }
         }
     }
 

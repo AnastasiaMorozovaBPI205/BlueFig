@@ -33,4 +33,9 @@ public class PatientHierarchyServiceImpl implements PatientHierarchyService {
     public void addPatientToHierarchy(String patientId, int number) {
         patientHierarchyJpaRepository.addPatientToHierarchy(patientId, number);
     }
+
+    @Override
+    public void changePatientNumber(String patientId, int number) {
+        patientHierarchyJpaRepository.changePatientNumber(patientId, number);
+    }
 }

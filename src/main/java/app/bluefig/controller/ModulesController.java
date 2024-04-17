@@ -161,6 +161,7 @@ public class ModulesController {
             for (ModuleWithParametersDTO module : modules) {
                 if (questionary.getModuleId().equals(module.getId())) {
                     module.setFrequency(questionary.getFrequency());
+                    module.setQuestionaryId(questionary.getId());
                     modulesForPatient.add(module);
                 }
             }
@@ -209,6 +210,8 @@ public class ModulesController {
             for (ModuleWithParametersDTO module : modules) {
                 if (questionary.getModuleId().equals(module.getId())) {
                     module.setFrequency(questionary.getFrequency());
+                    module.setQuestionaryId(questionary.getId());
+
                     modulesForPatient.add(module);
                 }
             }
@@ -285,6 +288,8 @@ public class ModulesController {
             for (ModuleWithParametersDTO module : modules) {
                 if (questionary.getModuleId().equals(module.getId())) {
                     module.setFrequency(questionary.getFrequency());
+                    module.setQuestionaryId(questionary.getId());
+
                     patientsModules.add(module);
                     break;
                 }
@@ -342,6 +347,8 @@ public class ModulesController {
             for (ModuleWithParametersDTO module : modules) {
                 if (questionary.getModuleId().equals(module.getId())) {
                     module.setFrequency(questionary.getFrequency());
+                    module.setQuestionaryId(questionary.getId());
+
                     patientsModules.add(module);
                     break;
                 }

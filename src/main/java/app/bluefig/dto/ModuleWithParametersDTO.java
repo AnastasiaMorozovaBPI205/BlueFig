@@ -12,6 +12,7 @@ import java.util.List;
 @Setter
 public class ModuleWithParametersDTO {
     private String id;
+    private String questionaryId;
     private String name;
     private int frequency;
     private LocalDateTime dateTime;
@@ -23,5 +24,6 @@ public class ModuleWithParametersDTO {
         frequency = 0;
         dateTime = LocalDateTime.now();
         parameterList = new ArrayList<>();
+        questionaryId = "";
     }
 }

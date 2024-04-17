@@ -366,7 +366,10 @@ public class ModulesController {
                     module.setId(moduleWithParametersDTO.getId());
                     module.setName(moduleWithParametersDTO.getName());
                     module.setFrequency(moduleWithParametersDTO.getFrequency());
-                    module.setParameterList(moduleWithParametersDTO.getParameterList());
+                    module.setParameterList(moduleWithParametersDTO.getParameterList()
+                            .stream()
+                            .map(Parameter::new)
+                            .toList());
                     break;
                 }
             }
@@ -683,6 +686,7 @@ public class ModulesController {
         final String BM_ADMIXTURE = "837e3f4f-cc4a-11ee-8c0c-00f5f80cf8ae";
 
         for (QuestionaryAnswerJpa answer : answers) {
+            answer.setValue(answer.getValue().replace("[", "").replace("]", ""));
             if (answer.getAnswerIdJpa().getParameterId().equals(VOMIT)) {
                 if (Integer.parseInt(answer.getValue()) >= 1) {
                     numberOfRedFlags += 1;

@@ -17,7 +17,7 @@ public interface PatientHierarchyJpaRepository extends JpaRepository<PatientHier
             "order by patient_hierarchy.number desc", nativeQuery = true)
     List<UserJpa> findSortedPatientHierarchyJpas();
 
-    @Query(value = "insert into patient_hierarchy (patient_id, number) values :patient_id, :number",
+    @Query(value = "insert into patient_hierarchy (patient_id, number) values (:patient_id, :number)",
             nativeQuery = true)
     void addPatientToHierarchy(@Param("patient_id") String patientId, @Param("number") int number);
 }

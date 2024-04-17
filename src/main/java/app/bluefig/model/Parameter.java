@@ -21,4 +21,13 @@ public class Parameter {
         moduleId = "";
         value = "";
     }
+
+    public Parameter(Parameter other) {
+        this.id = other.id;
+        this.dataType = other.dataType;
+        this.name = other.name;
+        this.description = other.description;
+        this.moduleId = other.moduleId;
+        this.value = other.value;
+    }
 }

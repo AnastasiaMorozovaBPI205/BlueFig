@@ -13,6 +13,7 @@ public interface FormulaJpaRepository extends JpaRepository<FormulaJpa, String> 
     @Query(value = "select distinct nutrition_feature_value.name from nutrition_feature_value order by name", nativeQuery = true)
     List<String> findFormulaNames();
 
-    @Query(value = "select nutrition_feature_value.value from nutrition_feature_value where name = :name", nativeQuery = true)
+    @Query(value = "select nutrition_feature_value.value from nutrition_feature_value where name = :name and " +
+            "feature_name = 'ККал/100мл'", nativeQuery = true)
     String findFormulaByName(@Param("name") String name);
 }

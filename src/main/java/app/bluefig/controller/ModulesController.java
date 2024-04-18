@@ -619,7 +619,8 @@ public class ModulesController {
             if (answer.getAnswerIdJpa().getParameterId().equals(MIXTURE_MASS)) {
                 mixtureMass = Integer.parseInt(answer.getValue());
             } else if (answer.getAnswerIdJpa().getParameterId().equals(FORMULA_NAME)) {
-                calories = Integer.parseInt(formulaService.findFormulaByName(answer.getValue()));
+                calories = Integer.parseInt(formulaService.findFormulaByName(answer.getValue()
+                        .replace("[", "").replace("]", "")));
             }
         }
 
@@ -698,6 +699,10 @@ public class ModulesController {
         List<List<QuestionaryAnswerJpa>> previousAnswers = new ArrayList<>();
         for (ModuleFillInJpa moduleFillIn : previousFillIns) {
             previousAnswers.add(questionaryAnswerService.findFieldAnswers(moduleFillIn.getId()));
+        }
+
+        if (previousAnswers.isEmpty()) {
+            return new ArrayList<>();
         }
 
         return previousAnswers.get(0);

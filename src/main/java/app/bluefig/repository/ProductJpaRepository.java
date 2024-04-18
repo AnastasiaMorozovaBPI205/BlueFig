@@ -10,6 +10,6 @@ import java.util.List;
 
 @Repository
 public interface ProductJpaRepository extends JpaRepository<ProductJpa, String> {
-    @Query(value = "select * from product where group_id = :id", nativeQuery = true)
+    @Query(value = "select * from product where group_id = :id order by name", nativeQuery = true)
     List<ProductJpa> findProductsInGroup(@Param("id") String productGroupId);
 }

@@ -330,7 +330,8 @@ public class ModulesController {
         return patientsFillIns;
     }
 
-    @GetMapping("/moduleFillIn/{patientId}")
+    @RequestMapping(path="/moduleFillIn/{patientId}", method=RequestMethod.GET,
+                    produces = "application/json;charset=UTF-8")
     public List<ModuleWithParametersDTO> findModuleFillInsByPatientId(@PathVariable String patientId) {
         if (patientId == null) {
             throw new ResponseStatusException(
@@ -584,6 +585,8 @@ public class ModulesController {
                                         List<DoctorParameterFillInJpa> doctorParameters) {
         int numberOfRedFlags = 0;
 
+
+
         return numberOfRedFlags;
     }
 
@@ -595,6 +598,7 @@ public class ModulesController {
         final String WEIGHT = "7eb1c37f-cc4a-11ee-8c0c-00f5f80cf8ae";
         final String HEIGHT = "80a45253-cc4a-11ee-8c0c-00f5f80cf8ae";
         final String PERCENTAGE_DIFFERENCE = "31f92255-fa55-11ee-88dc-00f5f80cf8ae";
+        final String CONVERSION_COEFFICIENT = "f480a9de-fb3f-11ee-88dc-00f5f80cf8ae";
 
         int mixtureMass = 0;
         int calories = 0;
@@ -623,7 +627,14 @@ public class ModulesController {
             }
         }
 
-        double countedEnergy = getCountedEnergyShofield(age, sex, weight, height);
+        double conversionCoefficient = 1;
+        for (DoctorParameterFillInJpa parameter : doctorParameters) {
+            if (parameter.getId().getParameterId().equals(CONVERSION_COEFFICIENT)) {
+                conversionCoefficient = Integer.parseInt(parameter.getValue());
+                break;
+            }
+        }
+        double countedEnergy = getCountedEnergyShofield(age, sex, weight, height) * conversionCoefficient;
 
         if (factEnergy == 0 || countedEnergy == 0) {
             return 0;
@@ -691,26 +702,65 @@ public class ModulesController {
 
         for (QuestionaryAnswerJpa answer : answers) {
             answer.setValue(answer.getValue().replace("[", "").replace("]", ""));
-            if (answer.getAnswerIdJpa().getParameterId().equals(VOMIT)) {
-                if (Integer.parseInt(answer.getValue()) >= 1) {
-                    numberOfRedFlags += 1;
+            switch (answer.getAnswerIdJpa().getParameterId()) {
+                case VOMIT -> {
+                    if (Integer.parseInt(answer.getValue()) >= 1) {
+                        numberOfRedFlags += 1;
+                    }
                 }
-            } else if (answer.getAnswerIdJpa().getParameterId().equals(NAUSEA)) {
-                if (answer.getValue().equals("препятствует приему пищи")) {
-                    numberOfRedFlags += 1;
+                case NAUSEA -> {
+                    if (answer.getValue().equals("препятствует приему пищи")) {
+                        numberOfRedFlags += 1;
+                    }
                 }
-            } else if (answer.getAnswerIdJpa().getParameterId().equals(APPETIT)) {
-                if (answer.getValue().equals("отсутствует")) {
-                    numberOfRedFlags += 1;
+                case APPETIT -> {
+                    if (answer.getValue().equals("отсутствует")) {
+                        numberOfRedFlags += 1;
+                    }
                 }
-            } else if (answer.getAnswerIdJpa().getParameterId().equals(SKIN_RASH)) {
-                if (answer.getValue().equals("да")) {
-                    numberOfRedFlags += 1;
+                case SKIN_RASH -> {
+                    if (answer.getValue().equals("да")) {
+                        numberOfRedFlags += 1;
+                    }
                 }
-            } else if (answer.getAnswerIdJpa().getParameterId().equals(BM_TYPE)) {
+                case BM_TYPE -> {
+                    for (DoctorParameterFillInJpa parameter : doctorParameters) {
+                        if (parameter.getId().getParameterId().equals(BM_TYPE)) {
+                            List<String> redFlagsBM = List.of(parameter.getValue()
+                                    .replace("[", "")
+                                    .replace("]", "")
+                                    .split(","));
 
-            } else if (answer.getAnswerIdJpa().getParameterId().equals(BM_ADMIXTURE)) {
+                            for (String redFlag : redFlagsBM) {
+                                if (answer.getValue().equals(redFlag)) {
+                                    numberOfRedFlags += 1;
+                                }
+                            }
+                        }
+                    }
+                }
+                case BM_ADMIXTURE -> {
+                    for (DoctorParameterFillInJpa parameter : doctorParameters) {
+                        if (parameter.getId().getParameterId().equals(BM_ADMIXTURE)) {
+                            List<String> redFlagsBMAdmixture = List.of(parameter.getValue()
+                                    .replace("[", "")
+                                    .replace("]", "")
+                                    .split(","));
 
+                            List<String> answerAdmixtures = List.of(answer.getValue()
+                                    .replace("[", "")
+                                    .replace("]", "")
+                                    .split(","));
+                            for (String redFlag : redFlagsBMAdmixture) {
+                                for (String answerAdmixture : answerAdmixtures) {
+                                    if (redFlag.equals(answerAdmixture)) {
+                                        numberOfRedFlags += 1;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 

@@ -17,7 +17,7 @@ public interface NotificationJpaRepository extends JpaRepository<NotificationJpa
     void addNotification(@Param("user_id") String doctorId, @Param("text") String text,
                          @Param("datetime") LocalDateTime datetime);
 
-    @Query(value = "select * from notifications where user_id = :user_id",
+    @Query(value = "select * from notifications where user_id = :user_id order by datetime desc",
             nativeQuery = true)
     List<NotificationJpa> findNotificationsByUserId(@Param("user_id") String userId);
 }

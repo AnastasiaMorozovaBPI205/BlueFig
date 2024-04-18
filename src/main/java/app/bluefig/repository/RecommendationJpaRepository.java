@@ -17,7 +17,8 @@ public interface RecommendationJpaRepository extends JpaRepository<Recommendatio
             "doctor_recommendation.recommendation, user.firstname, user.lastname, user.fathername " +
             "from doctor_recommendation " +
             "join user on user.id = doctor_recommendation.doctor_id " +
-            "where doctor_recommendation.patient_id = :patient_id", nativeQuery = true)
+            "where doctor_recommendation.patient_id = :patient_id" +
+            "order by doctor_recommendation.datetime desc", nativeQuery = true)
     List<RecommendationJpa> findRecommendationJpaByPatient(@Param("patient_id") String patientId);
 
     @Query(value = "insert into doctor_recommendation (doctor_id, patient_id, datetime, recommendation) " +

@@ -34,24 +34,24 @@ public interface UserJpaRepository extends JpaRepository<UserJpa, String> {
     @Query(value = "select user.id, user.username, user.firstname, user.lastname, user.email, user.password_hash, " +
             "user.role_id, user.birthday, user.sex, user.fathername from user " +
             "join doctor_watch on user.id = doctor_watch.patient_id  " +
-            "where doctor_watch.doctor_id = :doctor_id", nativeQuery = true)
+            "where doctor_watch.doctor_id = :doctor_id order by lastname", nativeQuery = true)
     List<UserJpa> findDoctorsPatientsJpa(@Param("doctor_id") String doctorId);
 
     @Query(value = "select user.id, user.username, user.firstname, user.lastname, user.email, user.password_hash, " +
             "user.role_id, user.birthday, user.sex, user.fathername from user " +
             "join doctor_watch on user.id = doctor_watch.doctor_id " +
-            "where doctor_watch.patient_id = :patient_id", nativeQuery = true)
+            "where doctor_watch.patient_id = :patient_id order by lastname", nativeQuery = true)
     List<UserJpa> findPatientsDoctorsJpa(@Param("patient_id") String patientId);
 
     @Query(value = "select user.id, user.username, user.firstname, user.lastname, user.email, user.password_hash, " +
             "user.role_id, user.birthday, user.sex, user.fathername from user " +
             "join user_role on user.role_id = user_role.id " +
-            "where user_role.name = 'doctor'", nativeQuery = true)
+            "where user_role.name = 'doctor' order by lastname", nativeQuery = true)
     List<UserJpa> findDoctorsJpa();
 
     @Query(value = "select user.id, user.username, user.firstname, user.lastname, user.email, user.password_hash, " +
             "user.role_id, user.birthday, user.sex, user.fathername from user " +
             "join user_role on user.role_id = user_role.id " +
-            "where user_role.name = 'patient'", nativeQuery = true)
+            "where user_role.name = 'patient' order by lastname", nativeQuery = true)
     List<UserJpa> findPatientsJpa();
 }

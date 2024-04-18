@@ -57,7 +57,8 @@ public class RecommendationController {
      * @param patientId пациента
      * @return список рекомендаций
      */
-    @GetMapping("/recommendation/{patientId}")
+    @RequestMapping(path="/recommendation/{patientId}", method=RequestMethod.GET,
+            produces = "application/json;charset=UTF-8")
     public List<Recommendation> getRecommendationByPatient(@PathVariable String patientId) {
         List<RecommendationJpa> recommendationJpas = recommendationService.findRecommendationJpaByPatient(patientId);
         return mapper.RecommendationJpasToRecommendations(recommendationJpas);

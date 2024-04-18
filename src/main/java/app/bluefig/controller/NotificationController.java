@@ -6,10 +6,7 @@ import app.bluefig.model.Notification;
 import app.bluefig.service.NotificationServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -22,7 +19,8 @@ public class NotificationController {
     @Autowired
     private MapStructMapper mapper;
 
-    @GetMapping("/notifications/{userId}")
+    @RequestMapping(path="/notifications/{userId}", method=RequestMethod.GET,
+            produces = "application/json;charset=UTF-8")
     public List<Notification> getNotifications(@PathVariable String userId) {
         if (userId == null) {
             throw new ResponseStatusException(

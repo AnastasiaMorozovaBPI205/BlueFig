@@ -90,7 +90,8 @@ public class UserController {
      * @param id пользователя
      * @return данные пользователя
      */
-    @GetMapping("/user/{id}")
+    @RequestMapping(path="/user/{id}", method=RequestMethod.GET,
+            produces = "application/json;charset=UTF-8")
     public User getUserById(@PathVariable String id) {
         if (id == null) {
             throw new ResponseStatusException(
@@ -122,7 +123,8 @@ public class UserController {
      * @param doctorId врача
      * @return пациентов врача
      */
-    @GetMapping("/patients_list/{doctorId}")
+    @RequestMapping(path="/patients_list/{doctorId}", method=RequestMethod.GET,
+            produces = "application/json;charset=UTF-8")
     public List<User> getDoctorsPatients(@PathVariable String doctorId) {
         if (doctorId == null) {
             throw new ResponseStatusException(
@@ -139,7 +141,8 @@ public class UserController {
      * @param patientId пациента
      * @return врачей пациента
      */
-    @GetMapping("/doctors_list/{patientId}")
+    @RequestMapping(path="/doctors_list/{patientId}", method=RequestMethod.GET,
+            produces = "application/json;charset=UTF-8")
     public List<User> getPatientsDoctors(@PathVariable String patientId) {
         if (patientId == null) {
             throw new ResponseStatusException(
@@ -183,7 +186,8 @@ public class UserController {
      * Поиск всех пациентов.
      * @return пациенты
      */
-    @GetMapping("/doctors_list")
+    @RequestMapping(path="/doctors_list", method=RequestMethod.GET,
+            produces = "application/json;charset=UTF-8")
     public List<User> getDoctors() {
         List<UserJpa> userJpas = userService.findDoctors();
         return mapper.UserJpasToUsers(userJpas);
@@ -193,7 +197,8 @@ public class UserController {
      * Поиск всех врачей.
      * @return врачи
      */
-    @GetMapping("/patients_list")
+    @RequestMapping(path="/patients_list", method=RequestMethod.GET,
+            produces = "application/json;charset=UTF-8")
     public List<User> getPatients() {
         List<UserJpa> userJpas = userService.findPatients();
         return mapper.UserJpasToUsers(userJpas);

@@ -72,22 +72,25 @@ public class ModulesController {
     @Autowired
     PatientHierarchyServiceImpl patientHierarchyService;
 
-    @GetMapping("/parameters")
+    @RequestMapping(path="/parameters", method=RequestMethod.GET,
+            produces = "application/json;charset=UTF-8")
     public List<ModuleWithParametersDTO> getParameters() {
         return getAllModules();
     }
 
-    @GetMapping("/doctorParameters/{moduleId}")
+    @RequestMapping(path="/doctorParameters/{moduleId}", method=RequestMethod.GET,
+            produces = "application/json;charset=UTF-8")
     public List<DoctorParameter> getDoctorParameters(@PathVariable String moduleId) {
         return mapper.DoctorParametersJpaToDoctorParameters(doctorParameterService.findDoctorParameterJpasByModuleId(moduleId));
     }
 
-    @GetMapping("/doctorParametersLabels/{parameterId}")
+    @RequestMapping(path="/doctorParametersLabels/{parameterId}", method=RequestMethod.GET,
+            produces = "application/json;charset=UTF-8")
     public List<DoctorParameterLabel> getDoctorParameterLabels(@PathVariable String parameterId) {
         return mapper.DoctorParameterLabelJpasToDoctorParameterLabels(doctorParameterLabelService.findDoctorParameterJpas(parameterId));
     }
 
-    @PostMapping("/questionary")
+    @RequestMapping(path="/questionary", method=RequestMethod.POST)
     public void addQuestionary(@RequestBody HashMap<String, Object> data) {
         String moduleId = data.get("moduleId").toString();
         int frequency = Integer.parseInt(data.get("frequency").toString());
@@ -143,7 +146,8 @@ public class ModulesController {
 
     }
 
-    @GetMapping("/module/{patientId}/{doctorId}")
+    @RequestMapping(path="/module/{patientId}/{doctorId}", method=RequestMethod.GET,
+            produces = "application/json;charset=UTF-8")
     public List<ModuleWithParametersDTO> findModulesByPatientDoctorIds(@PathVariable String patientId,
                                                                        @PathVariable String doctorId) {
         if (patientId == null || doctorId == null) {
@@ -170,7 +174,8 @@ public class ModulesController {
         return modulesForPatient;
     }
 
-    @GetMapping("/moduleParameters/{questionaryId}")
+    @RequestMapping(path="/moduleParameters/{questionaryId}", method=RequestMethod.GET,
+            produces = "application/json;charset=UTF-8")
     public List<DoctorParameterFillIn> findModulesParametersByPatientDoctorIds(@PathVariable String questionaryId) {
         if (questionaryId == null) {
             throw new ResponseStatusException(
@@ -193,7 +198,8 @@ public class ModulesController {
         return listMapped;
     }
 
-    @GetMapping("/module/{patientId}")
+    @RequestMapping(path="/module/{patientId}", method=RequestMethod.GET,
+            produces = "application/json;charset=UTF-8")
     public List<ModuleWithParametersDTO> findModulesByPatientId(@PathVariable String patientId) {
         if (patientId == null) {
             throw new ResponseStatusException(
@@ -220,7 +226,8 @@ public class ModulesController {
         return modulesForPatient;
     }
 
-    @GetMapping("/module/gastroLabel/{parameterId}")
+    @RequestMapping(path="/module/gastroLabel/{parameterId}", method=RequestMethod.GET,
+            produces = "application/json;charset=UTF-8")
     public List<GastroLabel> findGastroParameters(@PathVariable String parameterId) {
         if (parameterId == null) {
             throw new ResponseStatusException(
@@ -270,7 +277,8 @@ public class ModulesController {
         }
     }
 
-    @GetMapping("/moduleFillIn/{patientId}/{doctorId}")
+    @RequestMapping(path="/moduleFillIn/{patientId}/{doctorId}", method=RequestMethod.GET,
+            produces = "application/json;charset=UTF-8")
     public List<ModuleWithParametersDTO> findModuleFillInsByPatientDoctorIds(@PathVariable String patientId,
                                                                               @PathVariable String doctorId) {
         if (patientId == null || doctorId == null) {
@@ -393,7 +401,8 @@ public class ModulesController {
         return patientsFillIns;
     }
 
-    @GetMapping("/statistics/{moduleId}/{patientId}")
+    @RequestMapping(path="/statistics/{moduleId}/{patientId}", method=RequestMethod.GET,
+            produces = "application/json;charset=UTF-8")
     public HashMap<String, HashMap<LocalDateTime, Object>> getStatistics(@PathVariable String moduleId,
                                                                          @PathVariable String patientId) {
         HashMap<String, HashMap<LocalDateTime, Object>> graphs = new HashMap<>();
@@ -418,22 +427,26 @@ public class ModulesController {
         return graphs;
     }
 
-    @GetMapping("/formula")
+    @RequestMapping(path="/formula", method=RequestMethod.GET,
+            produces = "application/json;charset=UTF-8")
     public List<String> getFormulaNames() {
         return formulaService.findFormulaNames();
     }
 
-    @GetMapping("/productGroup")
+    @RequestMapping(path="/productGroup", method=RequestMethod.GET,
+            produces = "application/json;charset=UTF-8")
     public List<ProductGroup> getProductGroups() {
         return mapper.ProductGroupJpasToProductGroups(productGroupService.findProductGroups());
     }
 
-    @GetMapping("/products/{productGroupId}")
+    @RequestMapping(path="/products/{productGroupId}", method=RequestMethod.GET,
+            produces = "application/json;charset=UTF-8")
     public List<Product> getProducts(@PathVariable String productGroupId) {
         return mapper.ProductJpasToProducts(productService.findProductsInGroup(productGroupId));
     }
 
-    @GetMapping("/patientsHierarchy")
+    @RequestMapping(path="/patientsHierarchy", method=RequestMethod.GET,
+            produces = "application/json;charset=UTF-8")
     public List<User> getPatientsHierarchy() {
         return mapper.UserJpasToUsers(patientHierarchyService.findSortedPatientHierarchyJpas());
     }

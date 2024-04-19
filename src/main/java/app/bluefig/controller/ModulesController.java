@@ -24,6 +24,15 @@ public class ModulesController {
     private final String FORMULAS = "aa35f36a-de4f-11ee-8c0c-00f5f80cf8ae";
     private final String GASTRO_SYMPTOMS = "ab96ac6d-de4f-11ee-8c0c-00f5f80cf8ae";
 
+    final String MIXTURE_MASS = "75312e69-f9ee-11ee-88dc-00f5f80cf8ae";
+    final String FORMULA_NAME = "c67574a1-f8ec-11ee-88dc-00f5f80cf8ae";
+    final String PRODUCT_MASS = "7f1862d8-fe90-11ee-88dc-00f5f80cf8ae";
+    final String PRODUCT_NAME = "89e20095-fd15-11ee-88dc-00f5f80cf8ae";
+    final String WEIGHT = "7eb1c37f-cc4a-11ee-8c0c-00f5f80cf8ae";
+    final String HEIGHT = "80a45253-cc4a-11ee-8c0c-00f5f80cf8ae";
+    final String PERCENTAGE_DIFFERENCE = "31f92255-fa55-11ee-88dc-00f5f80cf8ae";
+    final String CONVERSION_COEFFICIENT = "f480a9de-fb3f-11ee-88dc-00f5f80cf8ae";
+
     @Autowired
     private MapStructMapper mapper;
 
@@ -493,7 +502,7 @@ public class ModulesController {
                                     String patientId, String questionaryId) {
         return switch (moduleId) {
             case ANTHROPOMETRY -> getNumberOfRedFlagsAnthropometry(answers, doctorParameters, patientId, questionaryId);
-            case DIET -> getNumberOfRedFlagsDiet(answers, doctorParameters);
+            case DIET -> getNumberOfRedFlagsDiet(answers, doctorParameters, patientId);
             case FORMULAS -> getNumberOfRedFlagsFormulas(answers, doctorParameters, patientId);
             case GASTRO_SYMPTOMS -> getNumberOfRedFlagsGastroSymptoms(answers, doctorParameters);
             default -> 0;
@@ -595,24 +604,41 @@ public class ModulesController {
     }
 
     private int getNumberOfRedFlagsDiet(List<QuestionaryAnswerJpa> answers,
-                                        List<DoctorParameterFillInJpa> doctorParameters) {
-        int numberOfRedFlags = 0;
+                                        List<DoctorParameterFillInJpa> doctorParameters,
+                                        String patientId) {
+        List<String> productMasses = new ArrayList<>();
+        List<String> productNames = new ArrayList<>();
 
+        for (QuestionaryAnswerJpa answerJpa : answers) {
+            if (answerJpa.getAnswerIdJpa().getParameterId().equals(PRODUCT_MASS)) {
+                productMasses = Arrays.stream(answerJpa.getValue()
+                                .replace("[", "").replace("]", "")
+                                .split(",")).toList();
+            } else if (answerJpa.getAnswerIdJpa().getParameterId().equals(PRODUCT_NAME)) {
+                productNames = Arrays.stream(answerJpa.getValue()
+                                .replace("[", "").replace("]", "")
+                                .split(",")).toList();
+            }
+        }
 
+        int productMass = 0;
+        int calories = 0;
+        for (String mass : productMasses) {
+            productMass += Integer.parseInt(mass);
+        }
 
-        return numberOfRedFlags;
+        for (String name : productNames) {
+            calories += productService.findProductEnergyByName(name);
+        }
+
+        int factEnergy = productMass * calories / 100;
+
+        return countRedFlagsConsumption(factEnergy, doctorParameters, patientId);
     }
 
     private int getNumberOfRedFlagsFormulas(List<QuestionaryAnswerJpa> answers,
                                             List<DoctorParameterFillInJpa> doctorParameters,
                                             String patientId) {
-        final String MIXTURE_MASS = "75312e69-f9ee-11ee-88dc-00f5f80cf8ae";
-        final String FORMULA_NAME = "c67574a1-f8ec-11ee-88dc-00f5f80cf8ae";
-        final String WEIGHT = "7eb1c37f-cc4a-11ee-8c0c-00f5f80cf8ae";
-        final String HEIGHT = "80a45253-cc4a-11ee-8c0c-00f5f80cf8ae";
-        final String PERCENTAGE_DIFFERENCE = "31f92255-fa55-11ee-88dc-00f5f80cf8ae";
-        final String CONVERSION_COEFFICIENT = "f480a9de-fb3f-11ee-88dc-00f5f80cf8ae";
-
         int mixtureMass = 0;
         int calories = 0;
         for (QuestionaryAnswerJpa answer : answers) {
@@ -626,6 +652,12 @@ public class ModulesController {
 
         int factEnergy = mixtureMass * calories / 100;
 
+        return countRedFlagsConsumption(factEnergy, doctorParameters, patientId);
+    }
+
+    private int countRedFlagsConsumption(int factEnergy,
+                                         List<DoctorParameterFillInJpa> doctorParameters,
+                                         String patientId) {
         UserJpa patient = userService.findUserJpaById(patientId);
         int sex = patient.getSex().equals("женский") ? 1 : 0;
         int age = Period.between(patient.getBirthday(), LocalDate.now()).getYears();

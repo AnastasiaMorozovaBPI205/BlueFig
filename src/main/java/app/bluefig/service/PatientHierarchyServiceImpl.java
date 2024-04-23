@@ -20,8 +20,8 @@ public class PatientHierarchyServiceImpl implements PatientHierarchyService {
     }
 
     @Override
-    public List<UserJpa> findSortedPatientHierarchyJpas() {
-        return patientHierarchyJpaRepository.findSortedPatientHierarchyJpas();
+    public List<UserJpa> findSortedPatientHierarchyJpas(String doctorId) {
+        return patientHierarchyJpaRepository.findSortedPatientHierarchyJpas(doctorId);
     }
 
     @Override

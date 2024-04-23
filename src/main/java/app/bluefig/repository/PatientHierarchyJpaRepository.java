@@ -11,11 +11,13 @@ import java.util.List;
 
 @Repository
 public interface PatientHierarchyJpaRepository extends JpaRepository<PatientHierarchyJpa, String> {
-    @Query(value = "select user.id, user.username, user.firstname, user.lastname, user.email, user.password_hash, " +
-            "user.role_id, user.birthday, user.sex, user.fathername from user " +
-            "join patient_hierarchy on user.id = patient_hierarchy.patient_id  " +
-            "order by patient_hierarchy.number desc", nativeQuery = true)
-    List<UserJpa> findSortedPatientHierarchyJpas();
+    @Query(value = """
+            select user.id, user.username, user.firstname, user.lastname, user.email, user.password_hash,\s
+            user.role_id, user.birthday, user.sex, user.fathername from user\s
+            join patient_hierarchy on user.id = patient_hierarchy.patient_id\s
+            join doctor_watch on user.id = doctor_watch.patient_id where doctor_watch.doctor_id = :doctor_id\s
+            order by patient_hierarchy.number desc""", nativeQuery = true)
+    List<UserJpa> findSortedPatientHierarchyJpas(@Param("doctor_id") String doctorId);
 
     @Query(value = "insert into patient_hierarchy (patient_id, number) values (:patient_id, :number)",
             nativeQuery = true)

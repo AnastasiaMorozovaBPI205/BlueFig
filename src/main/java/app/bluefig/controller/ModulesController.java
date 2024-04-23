@@ -460,10 +460,10 @@ public class ModulesController {
         return mapper.ProductJpasToProducts(productService.findSortedProducts());
     }
 
-    @RequestMapping(path="/patientsHierarchy", method=RequestMethod.GET,
+    @RequestMapping(path="/patientsHierarchy/{doctorId}", method=RequestMethod.GET,
             produces = "application/json;charset=UTF-8")
-    public List<User> getPatientsHierarchy() {
-        return mapper.UserJpasToUsers(patientHierarchyService.findSortedPatientHierarchyJpas());
+    public List<User> getPatientsHierarchy(@PathVariable String doctorId) {
+        return mapper.UserJpasToUsers(patientHierarchyService.findSortedPatientHierarchyJpas(doctorId));
     }
 
     private void changeNumberInHierarchy(List<QuestionaryAnswerJpa> answers, String questionaryId) {

@@ -54,4 +54,12 @@ public interface UserJpaRepository extends JpaRepository<UserJpa, String> {
             "join user_role on user.role_id = user_role.id " +
             "where user_role.name = 'patient' order by lastname", nativeQuery = true)
     List<UserJpa> findPatientsJpa();
+
+    @Query(value = """
+            select user.id, user.username, user.firstname, user.lastname, user.email, user.password_hash,\s
+            user.role_id, user.birthday, user.sex, user.fathername from user\s
+            join patient_hierarchy on user.id = patient_hierarchy.patient_id\s
+            join doctor_watch on user.id = doctor_watch.patient_id where doctor_watch.doctor_id = :doctor_id\s
+            order by patient_hierarchy.number desc""", nativeQuery = true)
+    List<UserJpa> findSortedPatientHierarchyJpas(@Param("doctor_id") String doctorId);
 }

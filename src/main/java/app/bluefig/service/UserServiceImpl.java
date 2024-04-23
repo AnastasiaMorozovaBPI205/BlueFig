@@ -60,4 +60,9 @@ public class UserServiceImpl implements UserService {
     public List<UserJpa> findPatients() {
         return userJpaRepository.findPatientsJpa();
     }
+
+    @Override
+    public List<UserJpa> findSortedPatientHierarchyJpas(String doctorId) {
+        return userJpaRepository.findSortedPatientHierarchyJpas(doctorId);
+    }
 }

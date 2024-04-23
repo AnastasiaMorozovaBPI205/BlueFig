@@ -8,7 +8,6 @@ import java.util.List;
 
 public interface PatientHierarchyService {
     PatientHierarchyJpa findPatientHierarchyJpaById(String patientId);
-    List<UserJpa> findSortedPatientHierarchyJpas(String doctorId);
     void deletePatientFromHierarchyById(String patientId);
     void addPatientToHierarchy(String patientId, int number);
     void changePatientNumber(String patientId, int number);

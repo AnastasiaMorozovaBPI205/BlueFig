@@ -463,7 +463,7 @@ public class ModulesController {
     @RequestMapping(path="/patientsHierarchy/{doctorId}", method=RequestMethod.GET,
             produces = "application/json;charset=UTF-8")
     public List<User> getPatientsHierarchy(@PathVariable String doctorId) {
-        return mapper.UserJpasToUsers(patientHierarchyService.findSortedPatientHierarchyJpas(doctorId));
+        return mapper.UserJpasToUsers(userService.findSortedPatientHierarchyJpas(doctorId));
     }
 
     private void changeNumberInHierarchy(List<QuestionaryAnswerJpa> answers, String questionaryId) {

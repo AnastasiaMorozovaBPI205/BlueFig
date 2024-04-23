@@ -18,4 +18,5 @@ public interface UserService {
     List<UserJpa>  findPatientsDoctorsJpa(String patientId);
     List<UserJpa>  findDoctors();
     List<UserJpa>  findPatients();
+    List<UserJpa> findSortedPatientHierarchyJpas(String doctorId);
 }

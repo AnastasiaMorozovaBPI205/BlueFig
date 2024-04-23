@@ -8,5 +8,6 @@ import java.util.List;
 public interface ProductService {
     List<ProductJpa> findProductsInGroup(String groupId);
     int findProductEnergyByName(String name);
+    List<ProductJpa> findSortedProducts();
 
 }

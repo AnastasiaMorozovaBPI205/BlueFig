@@ -21,4 +21,9 @@ public class ProductServiceImpl implements ProductService{
     public int findProductEnergyByName(String name) {
         return productJpaRepository.findProductEnergyByName(name);
     }
+
+    @Override
+    public List<ProductJpa> findSortedProducts() {
+        return productJpaRepository.findSortedProducts();
+    }
 }

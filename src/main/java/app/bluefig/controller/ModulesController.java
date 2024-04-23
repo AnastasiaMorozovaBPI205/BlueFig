@@ -412,9 +412,9 @@ public class ModulesController {
 
     @RequestMapping(path="/statistics/{moduleId}/{patientId}", method=RequestMethod.GET,
             produces = "application/json;charset=UTF-8")
-    public HashMap<String, HashMap<LocalDateTime, Object>> getStatistics(@PathVariable String moduleId,
+    public HashMap<String, LinkedHashMap<LocalDateTime, Object>> getStatistics(@PathVariable String moduleId,
                                                                          @PathVariable String patientId) {
-        HashMap<String, HashMap<LocalDateTime, Object>> graphs = new HashMap<>();
+        HashMap<String, LinkedHashMap<LocalDateTime, Object>> graphs = new HashMap<>();
 
         List<ModuleFillInJpa> fillIns = moduleFillInService.findModulesFillInJpaByPatientIdModuleId(moduleId, patientId);
         for (ModuleFillInJpa fillIn : fillIns) {
@@ -426,7 +426,7 @@ public class ModulesController {
                 }
 
                 if (!graphs.containsKey(parameterJpa.getName())) {
-                    graphs.put(parameterJpa.getName(), new HashMap<>());
+                    graphs.put(parameterJpa.getName(), new LinkedHashMap<>());
                 }
 
                 graphs.get(parameterJpa.getName()).put(fillIn.getDatetime(), answer.getValue());
@@ -452,6 +452,12 @@ public class ModulesController {
             produces = "application/json;charset=UTF-8")
     public List<Product> getProducts(@PathVariable String productGroupId) {
         return mapper.ProductJpasToProducts(productService.findProductsInGroup(productGroupId));
+    }
+
+    @RequestMapping(path="/products", method=RequestMethod.GET,
+            produces = "application/json;charset=UTF-8")
+    public List<Product> getSortedProducts() {
+        return mapper.ProductJpasToProducts(productService.findSortedProducts());
     }
 
     @RequestMapping(path="/patientsHierarchy", method=RequestMethod.GET,

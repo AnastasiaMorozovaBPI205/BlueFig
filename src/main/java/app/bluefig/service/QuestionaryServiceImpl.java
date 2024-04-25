@@ -5,6 +5,7 @@ import app.bluefig.repository.QuestionaryJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -13,8 +14,8 @@ public class QuestionaryServiceImpl implements QuestionaryService {
     QuestionaryJpaRepository questionaryJpaRepository;
 
     @Override
-    public void addQuestionary(String id, String doctorId, String patientId, String moduleId, int frequency) {
-        questionaryJpaRepository.addQuestionary(id, doctorId, patientId, moduleId, frequency);
+    public void addQuestionary(String id, String doctorId, String patientId, String moduleId, int frequency, LocalDateTime datetime) {
+        questionaryJpaRepository.addQuestionary(id, doctorId, patientId, moduleId, frequency, datetime);
     }
 
     @Override

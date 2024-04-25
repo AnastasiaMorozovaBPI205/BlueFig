@@ -114,7 +114,7 @@ public class ModulesController {
 
         UUID questionaryId = UUID.randomUUID();
 
-        questionaryService.addQuestionary(questionaryId.toString(), doctorId, patientId, moduleId, frequency);
+        questionaryService.addQuestionary(questionaryId.toString(), doctorId, patientId, moduleId, frequency, LocalDateTime.now());
 
         List<LinkedHashMap<String, Object>> list = (List<LinkedHashMap<String, Object>>) data.get("doctorParametersFillIn");
         for (LinkedHashMap<String, Object> hm : list) {
@@ -224,10 +224,11 @@ public class ModulesController {
         for (Questionary questionary : questionaries) {
             for (ModuleWithParametersDTO module : modules) {
                 if (questionary.getModuleId().equals(module.getId())) {
-                    module.setFrequency(questionary.getFrequency());
-                    module.setQuestionaryId(questionary.getId());
+                    ModuleWithParametersDTO newModule = new ModuleWithParametersDTO(module);
+                    newModule.setFrequency(questionary.getFrequency());
+                    newModule.setQuestionaryId(questionary.getId());
 
-                    modulesForPatient.add(module);
+                    modulesForPatient.add(newModule);
                 }
             }
         }

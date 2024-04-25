@@ -3,10 +3,11 @@ package app.bluefig.service;
 import app.bluefig.entity.QuestionaryJpa;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface QuestionaryService {
-    void addQuestionary(String id, String doctorId, String patientId, String moduleId, int frequency);
+    void addQuestionary(String id, String doctorId, String patientId, String moduleId, int frequency, LocalDateTime dateTime);
     List<QuestionaryJpa> findQuestionaryJpaByPatientDoctorIds(String doctorId, String patientId);
     void deleteQuestionaryById (String questionaryId);
     void updateQuestionaryFrequency(String id, int frequency);

@@ -26,4 +26,13 @@ public class ModuleWithParametersDTO {
         parameterList = new ArrayList<>();
         questionaryId = "";
     }
+
+    public ModuleWithParametersDTO(ModuleWithParametersDTO other) {
+        id = other.getId();
+        name = other.getName();
+        frequency = other.getFrequency();
+        dateTime = other.getDateTime();
+        parameterList = other.getParameterList();
+        questionaryId = other.getQuestionaryId();
+    }
 }

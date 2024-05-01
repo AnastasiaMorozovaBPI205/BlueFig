@@ -17,6 +17,7 @@ public class ModuleWithParametersDTO {
     private int frequency;
     private LocalDateTime dateTime;
     List<Parameter> parameterList;
+    private boolean isRed;
 
     public ModuleWithParametersDTO() {
         id = "";

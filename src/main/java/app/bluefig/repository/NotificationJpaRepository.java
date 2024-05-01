@@ -20,4 +20,8 @@ public interface NotificationJpaRepository extends JpaRepository<NotificationJpa
     @Query(value = "select * from notifications where user_id = :user_id order by datetime desc",
             nativeQuery = true)
     List<NotificationJpa> findNotificationsByUserId(@Param("user_id") String userId);
+
+    @Query(value = "delete from notifications where user_id = :user_id",
+            nativeQuery = true)
+    void deleteNotificationsByUserId(@Param("user_id") String userId);
 }

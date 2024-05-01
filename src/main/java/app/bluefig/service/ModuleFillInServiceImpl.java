@@ -14,8 +14,8 @@ public class ModuleFillInServiceImpl implements ModuleFillInService{
     ModuleFillInJpaRepository moduleFillInJpaRepository;
 
     @Override
-    public void addModuleFillIn(String id, String questionaryId, LocalDateTime datetime) {
-        moduleFillInJpaRepository.addModuleFillIn(id, questionaryId, datetime);
+    public void addModuleFillIn(String id, String questionaryId, LocalDateTime datetime, boolean isRed) {
+        moduleFillInJpaRepository.addModuleFillIn(id, questionaryId, datetime, isRed);
     }
 
     @Override

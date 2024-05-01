@@ -22,4 +22,6 @@ public class ModuleFillInJpa {
     @Column(name = "questionary_id")
     private String questionaryId;
     private LocalDateTime datetime;
+    @Column(name = "is_red")
+    private boolean isRed;
 }

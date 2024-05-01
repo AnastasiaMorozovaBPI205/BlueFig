@@ -278,9 +278,9 @@ public class ModulesController {
         LocalDateTime dateTime = LocalDateTime.parse(data.get("datetime").toString());
         UUID fillInId = UUID.randomUUID();
 
-        changeNumberInHierarchy(answerJpas, questionaryId);
+        boolean isRedFillIn = changeNumberInHierarchy(answerJpas, questionaryId);
 
-        moduleFillInService.addModuleFillIn(fillInId.toString(), questionaryId, dateTime);
+        moduleFillInService.addModuleFillIn(fillInId.toString(), questionaryId, dateTime, isRedFillIn);
 
         for (QuestionaryAnswerJpa answerJpa : answerJpas) {
             questionaryAnswerService.addFieldAnswer(answerJpa.getValue(), String.valueOf(fillInId), answerJpa.getAnswerIdJpa().getParameterId());
@@ -325,7 +325,11 @@ public class ModulesController {
                     module.setId(moduleWithParametersDTO.getId());
                     module.setName(moduleWithParametersDTO.getName());
                     module.setFrequency(moduleWithParametersDTO.getFrequency());
-                    module.setParameterList(moduleWithParametersDTO.getParameterList());
+                    module.setParameterList(moduleWithParametersDTO.getParameterList()
+                            .stream()
+                            .map(Parameter::new)
+                            .toList());
+                    module.setRed(moduleFillInJpa.isRed());
                     break;
                 }
             }
@@ -385,6 +389,8 @@ public class ModulesController {
                     module.setId(moduleWithParametersDTO.getId());
                     module.setName(moduleWithParametersDTO.getName());
                     module.setFrequency(moduleWithParametersDTO.getFrequency());
+                    module.setRed(moduleFillInJpa.isRed());
+
                     module.setParameterList(moduleWithParametersDTO.getParameterList()
                             .stream()
                             .map(Parameter::new)
@@ -467,7 +473,7 @@ public class ModulesController {
         return mapper.UserJpasToUsers(userService.findSortedPatientHierarchyJpas(doctorId));
     }
 
-    private void changeNumberInHierarchy(List<QuestionaryAnswerJpa> answers, String questionaryId) {
+    private boolean changeNumberInHierarchy(List<QuestionaryAnswerJpa> answers, String questionaryId) {
         int number = 0;
 
         QuestionaryJpa questionary = questionaryService.findQuestionaryById(questionaryId);
@@ -501,7 +507,11 @@ public class ModulesController {
             } else {
                 patientHierarchyService.changePatientNumber(patientId, number);
             }
+
+            return true;
         }
+
+        return false;
     }
 
     private int getNumberOfRedFlags(String moduleId, List<QuestionaryAnswerJpa> answers,

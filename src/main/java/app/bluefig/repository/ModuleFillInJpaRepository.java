@@ -11,10 +11,10 @@ import java.util.List;
 
 @Repository
 public interface ModuleFillInJpaRepository extends JpaRepository<ModuleFillInJpa, String> {
-    @Query(value = "insert into questionary_fillin (id, questionary_id, datetime) " +
-            "values (:id, :questionary_id, :datetime)", nativeQuery = true)
+    @Query(value = "insert into questionary_fillin (id, questionary_id, datetime, is_red) " +
+            "values (:id, :questionary_id, :datetime, :is_red)", nativeQuery = true)
     void addModuleFillIn(@Param("id") String id, @Param("questionary_id") String questionaryId,
-                   @Param("datetime") LocalDateTime datetime);
+                   @Param("datetime") LocalDateTime datetime, @Param("is_red") boolean IsRed);
 
     @Query(value = "select questionary_fillin.id, questionary_fillin.questionary_id, questionary_fillin.datetime" +
             " from questionary_fillin join questionary on questionary.id = questionary_fillin.questionary_id" +
@@ -24,7 +24,8 @@ public interface ModuleFillInJpaRepository extends JpaRepository<ModuleFillInJpa
     List<ModuleFillInJpa> findModulesFillInJpaByPatientDoctorIds(@Param("doctor_id") String doctorId,
                                                                  @Param("patient_id") String patientId);
 
-    @Query(value = "select questionary_fillin.id, questionary_fillin.questionary_id, questionary_fillin.datetime" +
+    @Query(value = "select questionary_fillin.id, questionary_fillin.questionary_id, questionary_fillin.datetime," +
+            "questionary_fillin.is_red" +
             " from questionary_fillin join questionary on questionary.id = questionary_fillin.questionary_id" +
             " where questionary.patient_id = :patient_id" +
             " order by questionary_fillin.datetime desc",

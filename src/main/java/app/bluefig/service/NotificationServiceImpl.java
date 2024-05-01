@@ -23,4 +23,9 @@ public class NotificationServiceImpl implements NotificationService{
         notificationJpaRepository.addNotification(userId, text, datetime);
     }
 
+    @Override
+    public void deleteNotificationsByUserId(String userId) {
+        notificationJpaRepository.deleteNotificationsByUserId(userId);
+    }
+
 }

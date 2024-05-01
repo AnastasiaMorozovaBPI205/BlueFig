@@ -65,4 +65,14 @@ public class UserServiceImpl implements UserService {
     public List<UserJpa> findSortedPatientHierarchyJpas(String doctorId) {
         return userJpaRepository.findSortedPatientHierarchyJpas(doctorId);
     }
+
+    @Override
+    public void changeUser(UserJpa userJpa) {
+        userJpaRepository.save(userJpa);
+    }
+
+    @Override
+    public void deleteDoctorFromWatch(String id) {
+        userJpaRepository.deleteDoctorFromWatch(id);
+    }
 }

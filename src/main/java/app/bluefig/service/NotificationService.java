@@ -9,4 +9,5 @@ import java.util.List;
 public interface NotificationService {
     List<NotificationJpa> getNotificationsByUserId(String userId);
     void addNotification(String userId, String text, LocalDateTime datetime);
+    void deleteNotificationsByUserId(String userId);
 }

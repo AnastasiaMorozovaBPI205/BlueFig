@@ -14,5 +14,5 @@ public interface QuestionaryService {
     List<QuestionaryJpa> findQuestionaryJpaByPatientId(String patientId);
     QuestionaryJpa findQuestionaryById(String questionaryId);
     String findQuestionaryByPatientIdModuleId(String patientId, String moduleId);
-
+    void setDoctorIdUndefined(String doctorId);
 }

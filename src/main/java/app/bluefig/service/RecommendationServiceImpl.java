@@ -24,6 +24,11 @@ public class RecommendationServiceImpl implements RecommendationService{
     }
 
     @Override
+    public void setDoctorIdUndefined(String doctorId) {
+        recommendationJpaRepository.setDoctorIdUndefined(doctorId);
+    }
+
+    @Override
     public void addRecommendation(String patientId, String doctorId, LocalDateTime dateTime, String recommendation) {
         recommendationJpaRepository.addRecommendation(patientId, doctorId, dateTime, recommendation);
     }

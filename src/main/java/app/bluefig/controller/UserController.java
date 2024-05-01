@@ -4,6 +4,8 @@ import app.bluefig.mapper.MapStructMapper;
 import app.bluefig.entity.UserJpa;
 import app.bluefig.model.User;
 import app.bluefig.service.NotificationServiceImpl;
+import app.bluefig.service.QuestionaryServiceImpl;
+import app.bluefig.service.RecommendationServiceImpl;
 import app.bluefig.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,6 +25,12 @@ public class UserController {
 
     @Autowired
     NotificationServiceImpl notificationService;
+
+    @Autowired
+    private QuestionaryServiceImpl questionaryService;
+
+    @Autowired
+    private RecommendationServiceImpl recommendationService;
 
     @Autowired
     private MapStructMapper mapper;
@@ -57,6 +65,10 @@ public class UserController {
     }
 
     private LocalDate getDate(String dateStr) {
+        if (dateStr == null) {
+            return null;
+        }
+
         if (dateStr.length() > 10) {
             return LocalDate.parse(dateStr.substring(0, 10));
         }
@@ -109,10 +121,25 @@ public class UserController {
      */
     @DeleteMapping("/user/{id}")
     public void deleteUserById(@PathVariable String id) {
+        final String doctorRoleId = "47b436f0-b4bb-11ee-8c0c-00f5f80cf8ae";
+        final String patientRoleId = "49e6f33b-b4bb-11ee-8c0c-00f5f80cf8ae";
+
         if (id == null) {
             throw new ResponseStatusException(
                     HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Не заполнены поля."
             );
+        }
+
+        UserJpa user = userService.findUserJpaById(id);
+
+        if (user.getRoleId().equals(doctorRoleId)) {
+            questionaryService.setDoctorIdUndefined(id);
+            recommendationService.setDoctorIdUndefined(id);
+
+            notificationService.deleteNotificationsByUserId(id);
+            userService.deleteDoctorFromWatch(id);
+        } else if (user.getRoleId().equals(patientRoleId)) {
+
         }
 
         userService.deleteUserJpa(id);
@@ -202,5 +229,64 @@ public class UserController {
     public List<User> getPatients() {
         List<UserJpa> userJpas = userService.findPatients();
         return mapper.UserJpasToUsers(userJpas);
+    }
+
+    /**
+     * Изменение информации пользователя.
+     */
+    @PutMapping(path="/user", produces = "application/json;charset=UTF-8")
+    public void changeUser(@RequestBody HashMap<String, String> data) {
+        String id = data.get("id");
+
+        if (id == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Не заполнены поля."
+            );
+        }
+
+        String username = data.get("username");
+        String firstname = data.get("firstname");
+        String lastname = data.get("lastname");
+        String email = data.get("email");
+        LocalDate birthday = getDate(data.get("birthday"));
+        String sex = data.get("sex");
+        String fathername = data.get("fathername");
+
+        UserJpa user = userService.findUserJpaById(id);
+
+        if (username != null) {
+            user.setUsername(username);
+        }
+
+        if (firstname != null) {
+            user.setFirstname(firstname);
+        }
+
+        if (lastname != null) {
+            user.setLastname(lastname);
+        }
+
+        if (email != null) {
+            user.setEmail(email);
+        }
+
+        if (birthday != null) {
+            user.setBirthday(birthday);
+        }
+
+        if (sex != null) {
+            user.setSex(sex);
+        }
+
+        if (fathername != null) {
+            user.setFathername(fathername);
+        }
+
+        String password = data.get("password");
+        if (password != null) {
+            user.setPasswordHash(String.valueOf(password.hashCode()));
+        }
+
+        userService.changeUser(user);
     }
 }

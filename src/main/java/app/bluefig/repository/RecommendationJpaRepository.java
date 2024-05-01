@@ -36,4 +36,7 @@ public interface RecommendationJpaRepository extends JpaRepository<Recommendatio
     void addRecommendation(@Param("patient_id") String patientId, @Param("doctor_id") String doctorId,
                            @Param("datetime") LocalDateTime dateTime,
                            @Param("recommendation") String recommendation);
+
+    @Query(value = "update doctor_recommendation set doctor_id = 'undefined' where doctor_id = :doctor_id", nativeQuery = true)
+    void setDoctorIdUndefined(@Param("doctor_id") String doctorId);
 }

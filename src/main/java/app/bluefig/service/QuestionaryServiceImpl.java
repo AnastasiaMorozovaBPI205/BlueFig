@@ -47,4 +47,9 @@ public class QuestionaryServiceImpl implements QuestionaryService {
     public String findQuestionaryByPatientIdModuleId(String patientId, String moduleId) {
         return questionaryJpaRepository.findQuestionaryByPatientIdModuleId(patientId, moduleId).get(0);
     }
+
+    @Override
+    public void setDoctorIdUndefined(String doctorId) {
+        questionaryJpaRepository.setDoctorIdUndefined(doctorId);
+    }
 }

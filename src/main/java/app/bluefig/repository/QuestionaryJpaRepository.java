@@ -35,4 +35,6 @@ public interface QuestionaryJpaRepository extends JpaRepository<QuestionaryJpa, 
             " module_id = :module_id order by datetime desc", nativeQuery = true)
     List<String> findQuestionaryByPatientIdModuleId(@Param("patient_id") String patientId,
                                               @Param("module_id") String moduleId);
+    @Query(value = "update questionary set doctor_id = 'undefined' where doctor_id = :doctor_id", nativeQuery = true)
+    void setDoctorIdUndefined(@Param("doctor_id") String doctorId);
 }

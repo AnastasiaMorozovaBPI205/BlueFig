@@ -1,6 +1,6 @@
 package app.bluefig.controller;
 
-import app.bluefig.MapStructMapper;
+import app.bluefig.mapper.MapStructMapper;
 import app.bluefig.entity.RecommendationJpa;
 import app.bluefig.model.Recommendation;
 import app.bluefig.service.NotificationServiceImpl;
@@ -61,6 +61,20 @@ public class RecommendationController {
             produces = "application/json;charset=UTF-8")
     public List<Recommendation> getRecommendationByPatient(@PathVariable String patientId) {
         List<RecommendationJpa> recommendationJpas = recommendationService.findRecommendationJpaByPatient(patientId);
+        return mapper.RecommendationJpasToRecommendations(recommendationJpas);
+    }
+
+    /**
+     * Поиск рекомендаций по id пациента и врача.
+     * @param patientId пациента
+     * @return список рекомендаций
+     */
+    @RequestMapping(path="/recommendation/{patientId}/{doctorId}", method=RequestMethod.GET,
+            produces = "application/json;charset=UTF-8")
+    public List<Recommendation> getRecommendationByPatientDoctor(@PathVariable String patientId,
+                                                           @PathVariable String doctorId) {
+        List<RecommendationJpa> recommendationJpas = recommendationService.findRecommendationJpaByPatientDoctor(
+                patientId, doctorId);
         return mapper.RecommendationJpasToRecommendations(recommendationJpas);
     }
 }

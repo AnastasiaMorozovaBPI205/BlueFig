@@ -1,6 +1,6 @@
 package app.bluefig.controller;
 
-import app.bluefig.MapStructMapper;
+import app.bluefig.mapper.MapStructMapper;
 import app.bluefig.entity.UserJpa;
 import app.bluefig.model.User;
 import app.bluefig.service.NotificationServiceImpl;

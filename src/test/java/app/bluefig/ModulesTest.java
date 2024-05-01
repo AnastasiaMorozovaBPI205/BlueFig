@@ -3,6 +3,7 @@ package app.bluefig;
 import app.bluefig.controller.ModulesController;
 import app.bluefig.dto.ModuleWithParametersDTO;
 import app.bluefig.entity.*;
+import app.bluefig.mapper.MapStructMapper;
 import app.bluefig.model.GastroLabel;
 import app.bluefig.model.Parameter;
 import app.bluefig.model.Questionary;

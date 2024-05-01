@@ -2,6 +2,7 @@ package app.bluefig;
 
 import app.bluefig.controller.RecommendationController;
 import app.bluefig.entity.RecommendationJpa;
+import app.bluefig.mapper.MapStructMapper;
 import app.bluefig.model.Recommendation;
 import app.bluefig.service.RecommendationServiceImpl;
 import org.junit.jupiter.api.Test;

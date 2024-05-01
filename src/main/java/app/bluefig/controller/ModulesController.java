@@ -1,6 +1,6 @@
 package app.bluefig.controller;
 
-import app.bluefig.MapStructMapper;
+import app.bluefig.mapper.MapStructMapper;
 import app.bluefig.dto.ModuleWithParametersDTO;
 import app.bluefig.entity.*;
 import app.bluefig.model.*;

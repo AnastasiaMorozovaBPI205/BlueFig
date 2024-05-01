@@ -1,4 +1,4 @@
-package app.bluefig;
+package app.bluefig.mapper;
 
 import app.bluefig.entity.*;
 import app.bluefig.model.*;

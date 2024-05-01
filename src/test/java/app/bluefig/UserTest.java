@@ -2,6 +2,7 @@ package app.bluefig;
 
 import app.bluefig.controller.UserController;
 import app.bluefig.entity.UserJpa;
+import app.bluefig.mapper.MapStructMapper;
 import app.bluefig.model.User;
 import app.bluefig.service.UserServiceImpl;
 import org.junit.jupiter.api.Test;

@@ -19,6 +19,11 @@ public class RecommendationServiceImpl implements RecommendationService{
     }
 
     @Override
+    public List<RecommendationJpa> findRecommendationJpaByPatientDoctor(String patientId, String doctorId) {
+        return recommendationJpaRepository.findRecommendationJpaByPatientDoctor(patientId, doctorId);
+    }
+
+    @Override
     public void addRecommendation(String patientId, String doctorId, LocalDateTime dateTime, String recommendation) {
         recommendationJpaRepository.addRecommendation(patientId, doctorId, dateTime, recommendation);
     }

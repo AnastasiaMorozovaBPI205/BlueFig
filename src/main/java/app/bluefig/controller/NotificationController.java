@@ -1,7 +1,6 @@
 package app.bluefig.controller;
 
-import app.bluefig.MapStructMapper;
-import app.bluefig.dto.ModuleWithParametersDTO;
+import app.bluefig.mapper.MapStructMapper;
 import app.bluefig.model.Notification;
 import app.bluefig.service.NotificationServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;

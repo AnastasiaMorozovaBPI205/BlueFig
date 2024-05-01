@@ -45,6 +45,6 @@ public class QuestionaryServiceImpl implements QuestionaryService {
 
     @Override
     public String findQuestionaryByPatientIdModuleId(String patientId, String moduleId) {
-        return questionaryJpaRepository.findQuestionaryByPatientIdModuleId(patientId, moduleId);
+        return questionaryJpaRepository.findQuestionaryByPatientIdModuleId(patientId, moduleId).get(0);
     }
 }

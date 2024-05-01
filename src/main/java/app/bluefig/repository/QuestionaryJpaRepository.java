@@ -32,7 +32,7 @@ public interface QuestionaryJpaRepository extends JpaRepository<QuestionaryJpa, 
     QuestionaryJpa findQuestionaryById(@Param("id") String questionaryId);
 
     @Query(value = "select questionary.id from questionary where patient_id = :patient_id and" +
-            " module_id = :module_id", nativeQuery = true)
-    String findQuestionaryByPatientIdModuleId(@Param("patient_id") String patientId,
+            " module_id = :module_id order by datetime desc", nativeQuery = true)
+    List<String> findQuestionaryByPatientIdModuleId(@Param("patient_id") String patientId,
                                               @Param("module_id") String moduleId);
 }

@@ -620,10 +620,12 @@ public class ModulesController {
             if (answerJpa.getAnswerIdJpa().getParameterId().equals(PRODUCT_MASS)) {
                 productMasses = Arrays.stream(answerJpa.getValue()
                                 .replace("[", "").replace("]", "")
+                                .replace(" ", "")
                                 .split(",")).toList();
             } else if (answerJpa.getAnswerIdJpa().getParameterId().equals(PRODUCT_NAME)) {
                 productNames = Arrays.stream(answerJpa.getValue()
                                 .replace("[", "").replace("]", "")
+                                .replace(" ", "")
                                 .split(",")).toList();
             }
         }
@@ -653,7 +655,7 @@ public class ModulesController {
                 mixtureMass = Integer.parseInt(answer.getValue());
             } else if (answer.getAnswerIdJpa().getParameterId().equals(FORMULA_NAME)) {
                 calories = Integer.parseInt(formulaService.findFormulaByName(answer.getValue()
-                        .replace("[", "").replace("]", "")));
+                        .replace("[", "").replace("]", "").replace(" ", "")));
             }
         }
 
@@ -758,7 +760,8 @@ public class ModulesController {
         final String BM_ADMIXTURE = "837e3f4f-cc4a-11ee-8c0c-00f5f80cf8ae";
 
         for (QuestionaryAnswerJpa answer : answers) {
-            answer.setValue(answer.getValue().replace("[", "").replace("]", ""));
+            answer.setValue(answer.getValue().replace("[", "").replace("]", "")
+                    .replace(" ", ""));
             switch (answer.getAnswerIdJpa().getParameterId()) {
                 case VOMIT -> {
                     if (Integer.parseInt(answer.getValue()) >= 1) {
@@ -786,6 +789,7 @@ public class ModulesController {
                             List<String> redFlagsBM = List.of(parameter.getValue()
                                     .replace("[", "")
                                     .replace("]", "")
+                                    .replace(" ", "")
                                     .split(","));
 
                             for (String redFlag : redFlagsBM) {
@@ -802,11 +806,13 @@ public class ModulesController {
                             List<String> redFlagsBMAdmixture = List.of(parameter.getValue()
                                     .replace("[", "")
                                     .replace("]", "")
+                                    .replace(" ", "")
                                     .split(","));
 
                             List<String> answerAdmixtures = List.of(answer.getValue()
                                     .replace("[", "")
                                     .replace("]", "")
+                                    .replace(" ", "")
                                     .split(","));
                             for (String redFlag : redFlagsBMAdmixture) {
                                 for (String answerAdmixture : answerAdmixtures) {

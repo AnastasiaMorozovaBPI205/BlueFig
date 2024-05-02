@@ -150,7 +150,7 @@ public class UserController {
      * @param doctorId врача
      * @return пациентов врача
      */
-    @RequestMapping(path="/patients_list/{doctorId}", method=RequestMethod.GET,
+    @RequestMapping(path="/patientsList/{doctorId}", method=RequestMethod.GET,
             produces = "application/json;charset=UTF-8")
     public List<User> getDoctorsPatients(@PathVariable String doctorId) {
         if (doctorId == null) {
@@ -168,7 +168,7 @@ public class UserController {
      * @param patientId пациента
      * @return врачей пациента
      */
-    @RequestMapping(path="/doctors_list/{patientId}", method=RequestMethod.GET,
+    @RequestMapping(path="/doctorsList/{patientId}", method=RequestMethod.GET,
             produces = "application/json;charset=UTF-8")
     public List<User> getPatientsDoctors(@PathVariable String patientId) {
         if (patientId == null) {
@@ -186,7 +186,7 @@ public class UserController {
      * @param patientId пациента
      * @param doctorId врача
      */
-    @PostMapping("/link_patient/{patientId}/{doctorId}")
+    @PostMapping("/linkPatient/{patientId}/{doctorId}")
     public void linkPatientToDoctor(@PathVariable String patientId, @PathVariable String doctorId) {
         if (patientId == null || doctorId == null) {
             throw new ResponseStatusException(
@@ -213,7 +213,7 @@ public class UserController {
      * Поиск всех пациентов.
      * @return пациенты
      */
-    @RequestMapping(path="/doctors_list", method=RequestMethod.GET,
+    @RequestMapping(path="/doctorsList", method=RequestMethod.GET,
             produces = "application/json;charset=UTF-8")
     public List<User> getDoctors() {
         List<UserJpa> userJpas = userService.findDoctors();
@@ -224,7 +224,7 @@ public class UserController {
      * Поиск всех врачей.
      * @return врачи
      */
-    @RequestMapping(path="/patients_list", method=RequestMethod.GET,
+    @RequestMapping(path="/patientsList", method=RequestMethod.GET,
             produces = "application/json;charset=UTF-8")
     public List<User> getPatients() {
         List<UserJpa> userJpas = userService.findPatients();

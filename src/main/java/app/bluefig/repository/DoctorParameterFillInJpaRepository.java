@@ -18,4 +18,7 @@ public interface DoctorParameterFillInJpaRepository extends JpaRepository<Doctor
     @Query(value = "select * from questionary_doctor_parameters where questionary_id = :questionary_id",
             nativeQuery = true)
     List<DoctorParameterFillInJpa> findDoctorParameterFillIn(@Param("questionary_id") String questionaryId);
+
+    @Query(value = "delete from questionary_doctor_parameters where questionary_id = :questionary_id", nativeQuery = true)
+    void deleteDoctorParameterFillIn(@Param("questionary_id") String questionaryId);
 }

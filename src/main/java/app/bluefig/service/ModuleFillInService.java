@@ -12,5 +12,6 @@ public interface ModuleFillInService {
     List<ModuleFillInJpa> findModulesFillInJpaByPatientIdModuleId(String moduleId, String patientId);
     List<ModuleFillInJpa> findModulesFillInJpaByPatientIdQuestionaryId(String questionaryId, String patientId);
     List<ModuleFillInJpa> findModulesFillInJpaByPatientId(String patientId);
+    void deleteFillInById(String id);
 
 }

@@ -17,4 +17,7 @@ public interface QuestionaryAnswerJpaRepository extends JpaRepository<Questionar
 
     @Query(value = "select * from questionary_answer where fillin_id = :fillin_id", nativeQuery = true)
     List<QuestionaryAnswerJpa> findFieldAnswers(@Param("fillin_id") String fillInId);
+
+    @Query(value = "delete from questionary_answer where where fillin_id = :fillin_id", nativeQuery = true)
+    void deleteQuestionaryAnswers(@Param("fillin_id") String fillInId);
 }

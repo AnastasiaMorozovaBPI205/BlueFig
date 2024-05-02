@@ -32,4 +32,9 @@ public class RecommendationServiceImpl implements RecommendationService{
     public void addRecommendation(String patientId, String doctorId, LocalDateTime dateTime, String recommendation) {
         recommendationJpaRepository.addRecommendation(patientId, doctorId, dateTime, recommendation);
     }
+
+    @Override
+    public void deletePatientRecommendations(String id) {
+        recommendationJpaRepository.deletePatientRecommendations(id);
+    }
 }

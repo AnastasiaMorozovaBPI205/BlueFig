@@ -1,12 +1,11 @@
 package app.bluefig.controller;
 
+import app.bluefig.entity.ModuleFillInJpa;
+import app.bluefig.entity.QuestionaryJpa;
 import app.bluefig.mapper.MapStructMapper;
 import app.bluefig.entity.UserJpa;
 import app.bluefig.model.User;
-import app.bluefig.service.NotificationServiceImpl;
-import app.bluefig.service.QuestionaryServiceImpl;
-import app.bluefig.service.RecommendationServiceImpl;
-import app.bluefig.service.UserServiceImpl;
+import app.bluefig.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +30,18 @@ public class UserController {
 
     @Autowired
     private RecommendationServiceImpl recommendationService;
+
+    @Autowired
+    private PatientHierarchyServiceImpl patientHierarchyService;
+
+    @Autowired
+    private DoctorParameterFillInServiceImpl doctorParameterFillInService;
+
+    @Autowired
+    private ModuleFillInServiceImpl moduleFillInService;
+
+    @Autowired
+    private QuestionaryAnswerServiceImpl questionaryAnswerService;
 
     @Autowired
     private MapStructMapper mapper;
@@ -139,7 +150,22 @@ public class UserController {
             notificationService.deleteNotificationsByUserId(id);
             userService.deleteDoctorFromWatch(id);
         } else if (user.getRoleId().equals(patientRoleId)) {
+            recommendationService.deletePatientRecommendations(id);
+            notificationService.deleteNotificationsByUserId(id);
+            patientHierarchyService.deletePatientFromHierarchyById(id);
 
+           List<QuestionaryJpa> questionaries = questionaryService.findQuestionaryJpaByPatientId(id);
+           for (QuestionaryJpa questionary : questionaries) {
+                doctorParameterFillInService.deleteDoctorParameterFillIn(questionary.getId());
+                List<ModuleFillInJpa> fillIns = moduleFillInService.findModulesFillInJpaByPatientIdQuestionaryId(id, questionary.getId());
+                for (ModuleFillInJpa fill : fillIns) {
+                    questionaryAnswerService.deleteQuestionaryAnswers(fill.getId());
+                    moduleFillInService.deleteFillInById(fill.getId());
+                }
+                questionaryService.deleteQuestionaryById(questionary.getId());
+           }
+
+            userService.deletePatientFromWatch(id);
         }
 
         userService.deleteUserJpa(id);

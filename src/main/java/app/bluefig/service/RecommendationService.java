@@ -10,6 +10,6 @@ public interface RecommendationService {
     List<RecommendationJpa> findRecommendationJpaByPatient(String patientId);
     List<RecommendationJpa> findRecommendationJpaByPatientDoctor(String patientId, String doctorId);
     void setDoctorIdUndefined(String doctorId);
-
     void addRecommendation(String patientId, String doctorId, LocalDateTime dateTime, String recommendation);
+    void deletePatientRecommendations(@Param("id") String id);
 }

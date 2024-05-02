@@ -21,4 +21,9 @@ public class QuestionaryAnswerServiceImpl implements QuestionaryAnswerService {
     public List<QuestionaryAnswerJpa> findFieldAnswers(String fillInId) {
         return questionaryAnswerJpaRepository.findFieldAnswers(fillInId);
     }
+
+    @Override
+    public void deleteQuestionaryAnswers(String fillInId) {
+        questionaryAnswerJpaRepository.deleteQuestionaryAnswers(fillInId);
+    }
 }

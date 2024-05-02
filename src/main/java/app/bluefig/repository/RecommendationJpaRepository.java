@@ -39,4 +39,7 @@ public interface RecommendationJpaRepository extends JpaRepository<Recommendatio
 
     @Query(value = "update doctor_recommendation set doctor_id = 'undefined' where doctor_id = :doctor_id", nativeQuery = true)
     void setDoctorIdUndefined(@Param("doctor_id") String doctorId);
+
+    @Query(value = "delete from doctor_recommendation where patient_id = :id", nativeQuery = true)
+    void deletePatientRecommendations(@Param("id") String id);
 }

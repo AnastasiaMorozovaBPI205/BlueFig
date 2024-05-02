@@ -18,6 +18,11 @@ public class DoctorParameterFillInServiceImpl implements DoctorParameterFillInSe
     }
 
     @Override
+    public void deleteDoctorParameterFillIn(String questionaryId) {
+        doctorParameterFillInJpaRepository.deleteDoctorParameterFillIn(questionaryId);
+    }
+
+    @Override
     public List<DoctorParameterFillInJpa> findDoctorParameterFillInJpas(String questionaryId) {
         return doctorParameterFillInJpaRepository.findDoctorParameterFillIn(questionaryId);
     }

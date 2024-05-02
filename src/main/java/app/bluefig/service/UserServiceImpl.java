@@ -75,4 +75,9 @@ public class UserServiceImpl implements UserService {
     public void deleteDoctorFromWatch(String id) {
         userJpaRepository.deleteDoctorFromWatch(id);
     }
+
+    @Override
+    public void deletePatientFromWatch(String id) {
+        userJpaRepository.deletePatientFromWatch(id);
+    }
 }

@@ -33,6 +33,9 @@ public interface UserJpaRepository extends JpaRepository<UserJpa, String> {
     @Query(value = "delete from doctor_watch where doctor_id = :id", nativeQuery = true)
     void deleteDoctorFromWatch(@Param("id") String id);
 
+    @Query(value = "delete from doctor_watch where patient_id = :id", nativeQuery = true)
+    void deletePatientFromWatch(@Param("id") String id);
+
     @Query(value = "select user.id, user.username, user.firstname, user.lastname, user.email, user.password_hash, " +
             "user.role_id, user.birthday, user.sex, user.fathername from user " +
             "join doctor_watch on user.id = doctor_watch.patient_id  " +

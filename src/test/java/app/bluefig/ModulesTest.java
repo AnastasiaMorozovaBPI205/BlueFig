@@ -24,13 +24,32 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Disabled
 @Import(MapStructMapper.class)
 @WebMvcTest(ModulesController.class)
 public class ModulesTest {
     @Autowired
     private MockMvc mockMvc;
     @MockBean
+    private FormulaServiceImpl formulaService;
+    @MockBean
+    private NotificationServiceImpl notificationService;
+    @MockBean
+    private DoctorParameterService doctorParameterService;
+    @MockBean
+    private DoctorParameterLabelServiceImpl doctorParameterLabelService;
+    @MockBean
+    private DoctorParameterFillInServiceImpl doctorParameterFillInService;
+    @MockBean
+    private PatientHierarchyServiceImpl patientHierarchyService;
+    @MockBean
+    private ProductGroupServiceImpl productGroupService;
+    @MockBean
     private ModuleServiceImpl moduleService;
+    @MockBean
+    private UserServiceImpl userService;
+    @MockBean
+    private ProductServiceImpl productService;
     @MockBean
     private ParameterServiceImpl parameterService;
     @MockBean

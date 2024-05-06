@@ -4,6 +4,8 @@ import app.bluefig.controller.RecommendationController;
 import app.bluefig.entity.RecommendationJpa;
 import app.bluefig.mapper.MapStructMapper;
 import app.bluefig.model.Recommendation;
+import app.bluefig.service.NotificationServiceImpl;
+import app.bluefig.service.PatientHierarchyServiceImpl;
 import app.bluefig.service.RecommendationServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -29,6 +31,10 @@ public class RecommendationTest {
     private MockMvc mockMvc;
     @MockBean
     private RecommendationServiceImpl service;
+    @MockBean
+    private NotificationServiceImpl notificationService;
+    @MockBean
+    private PatientHierarchyServiceImpl patientHierarchyService;
     @MockBean
     private MapStructMapper mapper;
     private final LocalDateTime localDateTime = LocalDateTime.of(2022, 7, 7, 7, 7, 7, 7);

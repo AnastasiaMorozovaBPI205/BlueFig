@@ -25,7 +25,7 @@ public class QuestionaryServiceImpl implements QuestionaryService {
 
     @Override
     public void deleteQuestionaryById(String questionaryId) {
-        questionaryJpaRepository.deleteById(questionaryId);
+        questionaryJpaRepository.setQuestionaryInactive(questionaryId);
     }
 
     @Override

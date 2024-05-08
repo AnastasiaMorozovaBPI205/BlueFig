@@ -17,13 +17,20 @@ public interface QuestionaryJpaRepository extends JpaRepository<QuestionaryJpa, 
                         @Param("patient_id") String patientId, @Param("module_id") String moduleId,
                         @Param("frequency") int frequency, @Param("datetime") LocalDateTime dateTime);
 
-    @Query(value = "select * from questionary where doctor_id = :doctor_id and patient_id = :patient_id",
+    @Query(value = "select * from questionary where doctor_id = :doctor_id and patient_id = :patient_id and is_active = 1",
             nativeQuery = true)
     List<QuestionaryJpa> findQuestionaryJpaByPatientDoctorIds(@Param("doctor_id") String doctorId,
                                                               @Param("patient_id") String patientId);
+    @Query(value = "select * from questionary where doctor_id = :doctor_id and patient_id = :patient_id",
+            nativeQuery = true)
+    List<QuestionaryJpa> findQuestionaryJpaByPatientDoctorIdsAll(@Param("doctor_id") String doctorId,
+                                                              @Param("patient_id") String patientId);
+
+    @Query(value = "select * from questionary where patient_id = :patient_id and is_active = 1 order by datetime desc", nativeQuery = true)
+    List<QuestionaryJpa> findQuestionaryJpaByPatientId(@Param("patient_id") String patientId);
 
     @Query(value = "select * from questionary where patient_id = :patient_id order by datetime desc", nativeQuery = true)
-    List<QuestionaryJpa> findQuestionaryJpaByPatientId(@Param("patient_id") String patientId);
+    List<QuestionaryJpa> findQuestionaryJpaByPatientIdAll(@Param("patient_id") String patientId);
 
     @Query(value = "update questionary set frequency = :frequency where id = :id", nativeQuery = true)
     void updateQuestionaryFrequency(@Param("id") String id, @Param("frequency") int frequency);

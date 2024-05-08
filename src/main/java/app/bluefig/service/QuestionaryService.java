@@ -9,6 +9,8 @@ import java.util.List;
 public interface QuestionaryService {
     void addQuestionary(String id, String doctorId, String patientId, String moduleId, int frequency, LocalDateTime dateTime);
     List<QuestionaryJpa> findQuestionaryJpaByPatientDoctorIds(String doctorId, String patientId);
+    List<QuestionaryJpa> findQuestionaryJpaByPatientIdAll(String patientId);
+    List<QuestionaryJpa> findQuestionaryJpaByPatientDoctorIdsAll(String doctorId, String patientId);
     void deleteQuestionaryById (String questionaryId);
     void updateQuestionaryFrequency(String id, int frequency);
     List<QuestionaryJpa> findQuestionaryJpaByPatientId(String patientId);

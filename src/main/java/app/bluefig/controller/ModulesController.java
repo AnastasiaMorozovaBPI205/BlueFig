@@ -298,7 +298,7 @@ public class ModulesController {
         }
 
         List<Questionary> questionaries = mapper.ModuleJpasToModules(
-                questionaryService.findQuestionaryJpaByPatientDoctorIds(doctorId, patientId));
+                questionaryService.findQuestionaryJpaByPatientDoctorIdsAll(doctorId, patientId));
         List<ModuleWithParametersDTO> modules = getAllModules();
 
         List<ModuleWithParametersDTO> patientsModules = new ArrayList<>();
@@ -362,7 +362,7 @@ public class ModulesController {
         }
 
         List<Questionary> questionaries = mapper.ModuleJpasToModules(
-                questionaryService.findQuestionaryJpaByPatientId(patientId));
+                questionaryService.findQuestionaryJpaByPatientIdAll(patientId));
         List<ModuleWithParametersDTO> modules = getAllModules();
 
         List<ModuleWithParametersDTO> patientsModules = new ArrayList<>();

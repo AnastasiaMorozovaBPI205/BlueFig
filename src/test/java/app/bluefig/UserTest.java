@@ -22,7 +22,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Disabled
 @Import(MapStructMapper.class)
 @WebMvcTest(UserController.class)
 public class UserTest {
@@ -99,6 +98,9 @@ public class UserTest {
 
     @Test
     void deleteUserByIdTest() throws Exception {
+        UserJpa user = getUserJpa();
+        Mockito.when(this.service.findUserJpaById("1")).thenReturn(user);
+
         mockMvc.perform(delete("/user/1")).andExpect(status().isOk());
     }
 
@@ -108,7 +110,7 @@ public class UserTest {
         Mockito.when(this.service.findPatientsDoctorsJpa("1")).thenReturn(users);
         Mockito.when(this.mapper.UserJpasToUsers(users)).thenReturn(getUsers());
 
-        mockMvc.perform(get("/doctors_list/1"))
+        mockMvc.perform(get("/doctorsList/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value("2"));
     }
@@ -120,14 +122,34 @@ public class UserTest {
         Mockito.when(this.service.findDoctorsPatientsJpa("2")).thenReturn(users);
         Mockito.when(this.mapper.UserJpasToUsers(users)).thenReturn(List.of(getUser()));
 
-        mockMvc.perform(get("/patients_list/2"))
+        mockMvc.perform(get("/patientsList/2"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value("1"));
     }
 
     @Test
     void linkPatientToDoctorTest() throws Exception {
-        mockMvc.perform(post("/link_patient/1/2")).andExpect(status().isOk());
+        UserJpa doctor = getUserJpa();
+        Mockito.when(this.service.findUserJpaById("2")).thenReturn(doctor);
+        UserJpa patient = getUserJpa();
+        Mockito.when(this.service.findUserJpaById("1")).thenReturn(patient);
+
+        mockMvc.perform(post("/linkPatient/1/2")).andExpect(status().isOk());
+    }
+
+    @Test
+    void changeUserTest() throws Exception {
+        String body = """
+                {
+                    "username": "Bobbo",
+                    "id": "1"
+                }""";
+
+        UserJpa user = getUserJpa();
+        Mockito.when(this.service.findUserJpaById("1")).thenReturn(user);
+
+        mockMvc.perform(put("/user").contentType(MediaType.APPLICATION_JSON)
+                .content(body)).andExpect(status().isOk());
     }
 
     private List<User> getUsers() {

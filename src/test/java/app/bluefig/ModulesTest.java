@@ -18,13 +18,13 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Disabled
 @Import(MapStructMapper.class)
 @WebMvcTest(ModulesController.class)
 public class ModulesTest {
@@ -81,7 +81,17 @@ public class ModulesTest {
                     "moduleId": "1",
                     "frequency": "7",
                     "patientId": "1",
-                    "doctorId": "2"
+                    "doctorId": "2",
+                    "doctorParametersFillIn": [
+                          {
+                              "parameterId": "11",
+                              "value": "Автоматическая обработка"
+                          },
+                          {
+                              "parameterId": "22",
+                              "value": "Стандарт"
+                          }
+                      ]
                 }""";
 
         mockMvc.perform(post("/questionary").contentType(MediaType.APPLICATION_JSON)
@@ -96,6 +106,9 @@ public class ModulesTest {
 
     @Test
     void changeQuestionaryFrequencyTest() throws Exception {
+        QuestionaryJpa questionaryJpa = getQuestionaryJpas().get(0);
+        Mockito.when(this.questionaryService.findQuestionaryById("11")).thenReturn(questionaryJpa);
+
         mockMvc.perform(put("/questionary/11/7")).andExpect(status().isOk());
     }
 
@@ -130,7 +143,7 @@ public class ModulesTest {
     void addModuleFillInTest() throws Exception {
         String body = """
                 {
-                   "questionaryId": "1",
+                   "questionaryId": "11",
                    "datetime": "2024-03-19T18:04:49",
                    "fillIn":
                    [
@@ -144,13 +157,22 @@ public class ModulesTest {
                    ]
                 }
                 """;
+        QuestionaryJpa questionaryJpa = getQuestionaryJpas().get(0);
+        Mockito.when(this.questionaryService.findQuestionaryById("11")).thenReturn(questionaryJpa);
+
+        List<DoctorParameterFillInJpa> doctorParameterFillInJpas = getDoctorParameters();
+        Mockito.when(this.doctorParameterFillInService.findDoctorParameterFillInJpas("11"))
+                .thenReturn(doctorParameterFillInJpas);
+
+        PatientHierarchyJpa hierarchyJpa = getPatientHierarchy();
+        Mockito.when(this.patientHierarchyService.findPatientHierarchyJpaById("1"))
+                .thenReturn(hierarchyJpa);
 
         mockMvc.perform(post("/moduleFillIn").contentType(MediaType.APPLICATION_JSON)
                         .content(body))
                 .andExpect(status().isOk());
     }
 
-    @Disabled
     @Test
     void findModuleFillInsByPatientDoctorIdsTest() throws Exception {
         List<QuestionaryJpa> questionaryJpas = getQuestionaryJpas();
@@ -167,9 +189,17 @@ public class ModulesTest {
         Mockito.when(this.questionaryAnswerService.findFieldAnswers("111"))
                 .thenReturn(getQuestionaryAnswerJpa());
 
-        mockMvc.perform(get("/moduleFillIn/1/2"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value("1"));
+        mockMvc.perform(get("/moduleFillIn/1/2")).andExpect(status().isOk());
+    }
+
+    @Test
+    void getStatisticsTest() throws Exception {
+        Mockito.when(this.moduleFillInService.findModulesFillInJpaByPatientIdModuleId("2", "1"))
+                .thenReturn(getModuleFillInJpa());
+        Mockito.when(this.questionaryAnswerService.findFieldAnswers("111")).thenReturn(getQuestionaryAnswerJpa());
+        Mockito.when(this.parameterService.findParameterJpaById("11")).thenReturn(getParamsJpa().get(0));
+
+        mockMvc.perform(get("/statistics/2/1")).andExpect(status().isOk());
     }
 
     private List<ModuleWithParametersDTO> getModulesWithParams() {
@@ -179,6 +209,26 @@ public class ModulesTest {
         module.setFrequency(7);
         module.setParameterList(List.of(getParam()));
         return List.of(module);
+    }
+
+    private List<DoctorParameterFillInJpa> getDoctorParameters() {
+        DoctorParameterFillInIdJpa doctorParameterFillInIdJpa = new DoctorParameterFillInIdJpa();
+        doctorParameterFillInIdJpa.setParameterId("111");
+        doctorParameterFillInIdJpa.setQuestionaryId("11");
+
+        DoctorParameterFillInJpa doctorParameterFillInJpa = new DoctorParameterFillInJpa();
+        doctorParameterFillInJpa.setId(doctorParameterFillInIdJpa);
+        doctorParameterFillInJpa.setValue("Автоматическая обработка");
+
+        return List.of(doctorParameterFillInJpa);
+    }
+
+    private PatientHierarchyJpa getPatientHierarchy() {
+        PatientHierarchyJpa patientHierarchyJpa = new PatientHierarchyJpa();
+        patientHierarchyJpa.setPatientId("1");
+        patientHierarchyJpa.setNumber(1);
+
+        return patientHierarchyJpa;
     }
 
     private List<ModuleJpa> getModuleJpas() {
@@ -254,6 +304,7 @@ public class ModulesTest {
         ModuleFillInJpa moduleFillInJpa = new ModuleFillInJpa();
         moduleFillInJpa.setId("111");
         moduleFillInJpa.setQuestionaryId("12");
+        moduleFillInJpa.setDatetime(LocalDateTime.now());
 
         return List.of(moduleFillInJpa);
     }

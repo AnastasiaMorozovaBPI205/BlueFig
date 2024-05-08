@@ -46,4 +46,8 @@ public interface QuestionaryJpaRepository extends JpaRepository<QuestionaryJpa, 
     void setDoctorIdUndefined(@Param("doctor_id") String doctorId);
     @Query(value = "update questionary set is_active = 0 where id = :id", nativeQuery = true)
     void setQuestionaryInactive(@Param("id") String questionaryId);
+
+    @Query(value = "update questionary set doctor_id = :doctor_id where patient_id = :patient_id and " +
+            "doctor_id = 'undefined'", nativeQuery = true)
+    void setDoctorIdForUndefined(@Param("doctor_id") String doctorId, @Param("patient_id") String patientId);
 }

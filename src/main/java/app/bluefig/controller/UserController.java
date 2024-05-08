@@ -2,6 +2,7 @@ package app.bluefig.controller;
 
 import app.bluefig.entity.ModuleFillInJpa;
 import app.bluefig.entity.QuestionaryJpa;
+import app.bluefig.entity.RecommendationJpa;
 import app.bluefig.mapper.MapStructMapper;
 import app.bluefig.entity.UserJpa;
 import app.bluefig.model.User;
@@ -233,6 +234,9 @@ public class UserController {
 
         notificationService.addNotification(patientId, "К Вам прикрепили нового врача! ФИО: " + doctorName + ".",
                 LocalDateTime.now());
+
+        recommendationService.setDoctorIdForUndefined(doctorId, patientId);
+        questionaryService.setDoctorIdForUndefined(doctorId, patientId);
     }
 
     /**

@@ -62,4 +62,9 @@ public class QuestionaryServiceImpl implements QuestionaryService {
     public void setDoctorIdUndefined(String doctorId) {
         questionaryJpaRepository.setDoctorIdUndefined(doctorId);
     }
+
+    @Override
+    public void setDoctorIdForUndefined(String doctorId, String patientId) {
+        questionaryJpaRepository.setDoctorIdForUndefined(doctorId, patientId);
+    }
 }

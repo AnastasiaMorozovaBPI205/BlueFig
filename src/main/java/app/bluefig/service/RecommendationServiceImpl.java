@@ -37,4 +37,9 @@ public class RecommendationServiceImpl implements RecommendationService{
     public void deletePatientRecommendations(String id) {
         recommendationJpaRepository.deletePatientRecommendations(id);
     }
+
+    @Override
+    public void setDoctorIdForUndefined(String doctorId, String patientId) {
+        recommendationJpaRepository.setDoctorIdForUndefined(doctorId, patientId);
+    }
 }

@@ -11,5 +11,7 @@ public interface RecommendationService {
     List<RecommendationJpa> findRecommendationJpaByPatientDoctor(String patientId, String doctorId);
     void setDoctorIdUndefined(String doctorId);
     void addRecommendation(String patientId, String doctorId, LocalDateTime dateTime, String recommendation);
-    void deletePatientRecommendations(@Param("id") String id);
+    void deletePatientRecommendations(String id);
+    void setDoctorIdForUndefined(String doctorId, String patientId);
+
 }

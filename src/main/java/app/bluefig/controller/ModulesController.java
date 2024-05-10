@@ -137,7 +137,7 @@ public class ModulesController {
             );
         }
 
-        questionaryService.deleteQuestionaryById(questionaryId);
+        questionaryService.setQuestionaryInactive(questionaryId);
     }
 
     @PutMapping("/questionary/{questionaryId}/{frequency}")

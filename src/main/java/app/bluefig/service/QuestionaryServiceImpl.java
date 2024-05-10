@@ -34,7 +34,7 @@ public class QuestionaryServiceImpl implements QuestionaryService {
     }
 
     @Override
-    public void deleteQuestionaryById(String questionaryId) {
+    public void setQuestionaryInactive(String questionaryId) {
         questionaryJpaRepository.setQuestionaryInactive(questionaryId);
     }
 
@@ -66,5 +66,10 @@ public class QuestionaryServiceImpl implements QuestionaryService {
     @Override
     public void setDoctorIdForUndefined(String doctorId, String patientId) {
         questionaryJpaRepository.setDoctorIdForUndefined(doctorId, patientId);
+    }
+
+    @Override
+    public void deleteQuestionaryById(String id) {
+        questionaryJpaRepository.deleteById(id);
     }
 }

@@ -1,7 +1,6 @@
 package app.bluefig.service;
 
 import app.bluefig.entity.QuestionaryJpa;
-import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,11 +10,12 @@ public interface QuestionaryService {
     List<QuestionaryJpa> findQuestionaryJpaByPatientDoctorIds(String doctorId, String patientId);
     List<QuestionaryJpa> findQuestionaryJpaByPatientIdAll(String patientId);
     List<QuestionaryJpa> findQuestionaryJpaByPatientDoctorIdsAll(String doctorId, String patientId);
-    void deleteQuestionaryById (String questionaryId);
+    void setQuestionaryInactive(String questionaryId);
     void updateQuestionaryFrequency(String id, int frequency);
     List<QuestionaryJpa> findQuestionaryJpaByPatientId(String patientId);
     QuestionaryJpa findQuestionaryById(String questionaryId);
     String findQuestionaryByPatientIdModuleId(String patientId, String moduleId);
     void setDoctorIdUndefined(String doctorId);
     void setDoctorIdForUndefined(String doctorId, String patientId);
+    void deleteQuestionaryById(String id);
 }

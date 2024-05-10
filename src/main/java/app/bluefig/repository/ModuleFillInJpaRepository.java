@@ -43,7 +43,8 @@ public interface ModuleFillInJpaRepository extends JpaRepository<ModuleFillInJpa
                                                                  @Param("patient_id") String patientId);
 
     @Query(value = """
-            select questionary_fillin.id, questionary_fillin.questionary_id, questionary_fillin.datetime\s
+            select questionary_fillin.id, questionary_fillin.questionary_id, questionary_fillin.datetime,
+            questionary_fillin.is_red\s
             from questionary_fillin join questionary on questionary.id = questionary_fillin.questionary_id\s
             where questionary.patient_id = :patient_id and questionary_fillin.questionary_id = :questionary_id\s
             order by questionary_fillin.datetime desc""",

@@ -11,8 +11,8 @@ import java.util.List;
 
 @Repository
 public interface QuestionaryJpaRepository extends JpaRepository<QuestionaryJpa, String> {
-    @Query(value = "insert into questionary (id, doctor_id, patient_id, module_id, frequency, datetime) " +
-            "values (:id, :doctor_id, :patient_id, :module_id, :frequency, :datetime)", nativeQuery = true)
+    @Query(value = "insert into questionary (id, doctor_id, patient_id, module_id, frequency, datetime, is_active) " +
+            "values (:id, :doctor_id, :patient_id, :module_id, :frequency, :datetime, 1)", nativeQuery = true)
     void addQuestionary(@Param("id") String id, @Param("doctor_id") String doctorId,
                         @Param("patient_id") String patientId, @Param("module_id") String moduleId,
                         @Param("frequency") int frequency, @Param("datetime") LocalDateTime dateTime);

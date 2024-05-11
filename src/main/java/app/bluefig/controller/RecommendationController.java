@@ -34,7 +34,7 @@ public class RecommendationController {
      * Добавление рекомендации для пациента.
      * @param data данные
      */
-    @PostMapping("/recommendation")
+    @PostMapping(path = "/recommendation", produces = "application/json;charset=UTF-8")
     public void addRecommendation(@RequestBody HashMap<String, String> data) {
         String patientId = data.get("patientId");
         String doctorId = data.get("doctorId");

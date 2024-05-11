@@ -248,7 +248,7 @@ public class ModulesController {
         return mapper.GastroLabelJpasToGastroLabels(gastroLabelService.findGastroLabelByParameter(parameterId));
     }
 
-    @PostMapping("/moduleFillIn")
+    @PostMapping(path = "/moduleFillIn", produces = "application/json;charset=UTF-8")
     public void addModuleFillIn(@RequestBody HashMap<String, Object> data) {
         if (data.get("fillIn") == null || data.get("questionaryId") == null || data.get("datetime") == null) {
             throw new ResponseStatusException(

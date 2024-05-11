@@ -49,7 +49,7 @@ public class UserController {
     /**
      * Добавление нового пользователя в базу данных при регистрации.
      */
-    @PostMapping("/user")
+    @PostMapping(path = "/user", produces = "application/json;charset=UTF-8")
     public void addNewUser(@RequestBody HashMap<String, String> data) {
         String username = data.get("username");
         String firstname = data.get("firstname");

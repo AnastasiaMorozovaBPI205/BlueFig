@@ -27,8 +27,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserJpa findUserJpaByUsernamePasswordHash(String username, String passwordHash) {
-        return userJpaRepository.findUserJpaByUsernamePasswordHash(username, passwordHash);
+    public UserJpa findUserJpaByUsername(String username) {
+        return userJpaRepository.findUserJpaByUsername(username);
     }
 
     @Override
@@ -59,6 +59,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserJpa> findPatients() {
         return userJpaRepository.findPatientsJpa();
+    }
+
+    @Override
+    public List<String> findUsernames() {
+        return userJpaRepository.findUsernames();
     }
 
     @Override

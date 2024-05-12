@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
@@ -44,13 +45,15 @@ public class UserTest {
     @MockBean
     private NotificationServiceImpl notificationService;
     @MockBean
+    private PasswordEncoder passwordEncoder;
+    @MockBean
     private MapStructMapper mapper;
 
     @Test
     void registrationTest() throws Exception {
         String bodyRegistration = """
                 {
-                    "username": "Bobbo",
+                    "username": "Bobbob",
                     "firstname": "Bob",
                     "lastname": "Ross",
                     "fathername": "-",
@@ -74,7 +77,7 @@ public class UserTest {
                 }""";
 
         UserJpa user = getUserJpa();
-        Mockito.when(this.service.findUserJpaByUsernamePasswordHash("Bobbo", "1509442")).
+        Mockito.when(this.service.findUserJpaByUsername("Bobbo")).
                 thenReturn(user);
         Mockito.when(this.mapper.UserJpaToUser(user)).thenReturn(getUser());
 
@@ -193,7 +196,7 @@ public class UserTest {
         user.setFirstname("Bob");
         user.setFathername("-");
         user.setLastname("Ross");
-        user.setPasswordHash("4321");
+        user.setPasswordHash("$2a$10$kbpouTiVbGVC4OYFro4LyubH7yb.pTgjCo7yw1GTS5wKtPeQYO8gu");
         user.setRoleId("49e6f33b-b4bb-11ee-8c0c-00f5f80cf8ae");
         user.setSex("male");
 
@@ -209,7 +212,7 @@ public class UserTest {
         user.setFirstname("Bob");
         user.setFathername("-");
         user.setLastname("Ross");
-        user.setPasswordHash("4321");
+        user.setPasswordHash("$2a$10$kbpouTiVbGVC4OYFro4LyubH7yb.pTgjCo7yw1GTS5wKtPeQYO8gu");
         user.setRoleId("49e6f33b-b4bb-11ee-8c0c-00f5f80cf8ae");
         user.setSex("male");
 

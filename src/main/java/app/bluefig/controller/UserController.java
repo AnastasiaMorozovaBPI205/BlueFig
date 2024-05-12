@@ -6,8 +6,12 @@ import app.bluefig.mapper.MapStructMapper;
 import app.bluefig.entity.UserJpa;
 import app.bluefig.model.User;
 import app.bluefig.service.*;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -46,12 +50,23 @@ public class UserController {
     @Autowired
     private MapStructMapper mapper;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     /**
      * Добавление нового пользователя в базу данных при регистрации.
      */
     @PostMapping(path = "/user", produces = "application/json;charset=UTF-8")
     public void addNewUser(@RequestBody HashMap<String, String> data) {
         String username = data.get("username");
+
+        List<String> usernames = userService.findUsernames();
+        if (usernames.contains(username)) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Пользователь с таким логином уже есть."
+            );
+        }
+
         String firstname = data.get("firstname");
         String lastname = data.get("lastname");
         String email = data.get("email");
@@ -61,17 +76,14 @@ public class UserController {
         String roleId = data.get("roleId");
         String password = data.get("password");
 
-        if (username == null || firstname == null || lastname == null || email == null
-                || birthday == null || sex == null || fathername == null || roleId == null
-                || password == null) {
+        if (ObjectUtils.anyNull(username, firstname, lastname, email, birthday, sex, fathername, roleId, password)) {
             throw new ResponseStatusException(
                     HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Не заполнены поля."
             );
         }
 
-        String passwordHash = String.valueOf(password.hashCode());
-
-        userService.addUserList(username, firstname, lastname, fathername, email, passwordHash, roleId, birthday, sex);
+        userService.addUserList(username, firstname, lastname, fathername, email, passwordEncoder.encode(password),
+                roleId, birthday, sex);
         System.out.println("user added successfully");
     }
 
@@ -94,12 +106,10 @@ public class UserController {
     @PostMapping("/login")
     public User authorization(@RequestBody HashMap<String, String> data) {
         String username = data.get("username");
-        String password = data.get("password");
-        String passwordHash = String.valueOf(password.hashCode());
 
-        UserJpa userJpa = userService.findUserJpaByUsernamePasswordHash(username, passwordHash);
+        UserJpa userJpa = userService.findUserJpaByUsername(username);
 
-        if (userJpa == null) {
+        if (userJpa == null || !BCrypt.checkpw(data.get("password"), userJpa.getPasswordHash())) {
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED, "Ошибка авторизации!"
             );
@@ -107,6 +117,7 @@ public class UserController {
 
         return mapper.UserJpaToUser(userJpa);
     }
+
 
     /**
      * Поиск данных пользователя по его id.

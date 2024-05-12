@@ -16,7 +16,8 @@ public interface ModuleFillInJpaRepository extends JpaRepository<ModuleFillInJpa
     void addModuleFillIn(@Param("id") String id, @Param("questionary_id") String questionaryId,
                    @Param("datetime") LocalDateTime datetime, @Param("is_red") boolean IsRed);
 
-    @Query(value = "select questionary_fillin.id, questionary_fillin.questionary_id, questionary_fillin.datetime" +
+    @Query(value = "select questionary_fillin.id, questionary_fillin.questionary_id, questionary_fillin.datetime," +
+            " questionary_fillin.is_red" +
             " from questionary_fillin join questionary on questionary.id = questionary_fillin.questionary_id" +
             " where questionary.doctor_id = :doctor_id and questionary.patient_id = :patient_id" +
             " order by questionary_fillin.datetime desc",
@@ -33,7 +34,8 @@ public interface ModuleFillInJpaRepository extends JpaRepository<ModuleFillInJpa
     List<ModuleFillInJpa> findModulesFillInJpaByPatientId(@Param("patient_id") String patientId);
 
     @Query(value = """
-            select questionary_fillin.id, questionary_fillin.questionary_id, questionary_fillin.datetime\s
+            select questionary_fillin.id, questionary_fillin.questionary_id, questionary_fillin.datetime,\s
+            questionary_fillin.is_red\s
             from questionary_fillin\s
             join questionary on questionary.id = questionary_fillin.questionary_id\s
             where questionary.patient_id = :patient_id and questionary.module_id = :module_id\s

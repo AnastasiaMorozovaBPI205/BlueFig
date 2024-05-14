@@ -324,7 +324,7 @@ public class UserController {
 
         String password = data.get("password");
         if (password != null) {
-            user.setPasswordHash(String.valueOf(password.hashCode()));
+            user.setPasswordHash(passwordEncoder.encode(password));
         }
 
         userService.changeUser(user);

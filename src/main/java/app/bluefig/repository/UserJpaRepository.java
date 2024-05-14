@@ -31,6 +31,9 @@ public interface UserJpaRepository extends JpaRepository<UserJpa, String> {
     @Query(value = "select user.username from user", nativeQuery = true)
     List<String> findUsernames();
 
+    @Query(value = "select * from user where user.lastname = :lastname and user.role_id = :role_id", nativeQuery = true)
+    List<UserJpa> findUsersByLastname(@Param("lastname") String lastname, @Param("role_id") String roleId);
+
     @Query(value = "select * from user where user.username = :username and user.password_hash = :password_hash", nativeQuery = true)
     UserJpa findUserJpaByUsernamePasswordHash(@Param("username") String username, @Param("password_hash") String passwordHash);
 

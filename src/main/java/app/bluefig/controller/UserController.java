@@ -329,4 +329,12 @@ public class UserController {
 
         userService.changeUser(user);
     }
+
+    /**
+     * Поиск пользователя по фамилии.
+     */
+    @GetMapping(path="/user/find/{lastname}/{roleId}", produces = "application/json;charset=UTF-8")
+    public List<User> findUserByLastname(@PathVariable String lastname, @PathVariable String roleId) {
+        return mapper.UserJpasToUsers(userService.findUsersByLastname(lastname, roleId));
+    }
 }

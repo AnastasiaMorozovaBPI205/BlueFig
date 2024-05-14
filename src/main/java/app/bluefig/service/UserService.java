@@ -23,4 +23,5 @@ public interface UserService {
     void changeUser(UserJpa userJpa);
     void deleteDoctorFromWatch(String id);
     void deletePatientFromWatch(String id);
+    List<UserJpa> findUsersByLastname(String lastname, String roleId);
 }

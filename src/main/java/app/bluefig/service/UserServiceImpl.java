@@ -85,4 +85,9 @@ public class UserServiceImpl implements UserService {
     public void deletePatientFromWatch(String id) {
         userJpaRepository.deletePatientFromWatch(id);
     }
+
+    @Override
+    public List<UserJpa> findUsersByLastname(String lastname, String roleId) {
+        return userJpaRepository.findUsersByLastname(lastname, roleId);
+    }
 }

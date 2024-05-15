@@ -17,4 +17,9 @@ public class ModuleServiceImpl implements ModuleService {
         return moduleJpaRepository.findAll();
     }
 
+    @Override
+    public String getQuestionaryModuleName(String questionaryId) {
+        return moduleJpaRepository.getQuestionaryModuleName(questionaryId);
+    }
+
 }

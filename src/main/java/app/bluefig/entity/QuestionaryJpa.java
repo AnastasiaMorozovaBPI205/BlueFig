@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "questionary", schema = "sma_service")
 @Getter
@@ -23,4 +25,5 @@ public class QuestionaryJpa {
     @Column(name = "module_id")
     private String moduleId;
     private int frequency;
+    private LocalDateTime datetime;
 }

@@ -635,7 +635,6 @@ public class ModulesController {
             } else if (answerJpa.getAnswerIdJpa().getParameterId().equals(PRODUCT_NAME)) {
                 productNames = Arrays.stream(answerJpa.getValue()
                                 .replace("[", "").replace("]", "")
-                                .replace(" ", "")
                                 .split(",")).toList();
             }
         }
@@ -647,7 +646,7 @@ public class ModulesController {
         }
 
         for (String name : productNames) {
-            calories += productService.findProductEnergyByName(name);
+            calories += productService.findProductEnergyByName(name.trim());
         }
 
         int factEnergy = productMass * calories / 100;
@@ -665,7 +664,7 @@ public class ModulesController {
                 mixtureMass = Integer.parseInt(answer.getValue());
             } else if (answer.getAnswerIdJpa().getParameterId().equals(FORMULA_NAME)) {
                 calories = Integer.parseInt(formulaService.findFormulaByName(answer.getValue()
-                        .replace("[", "").replace("]", "").replace(" ", "")));
+                        .replace("[", "").replace("]", "").trim()));
             }
         }
 
@@ -768,10 +767,11 @@ public class ModulesController {
         final String SKIN_RASH = "89e4f98c-cc4a-11ee-8c0c-00f5f80cf8ae";
         final String BM_TYPE = "97cf3aa0-f2b6-11ee-88dc-00f5f80cf8ae";
         final String BM_ADMIXTURE = "837e3f4f-cc4a-11ee-8c0c-00f5f80cf8ae";
+        final String BM_ADMIXTURE_DOCTOR = "799f9b82-fb3e-11ee-88dc-00f5f80cf8ae";
+        final String BM_TYPE_DOCTOR = "326c8381-fa55-11ee-88dc-00f5f80cf8ae";
 
         for (QuestionaryAnswerJpa answer : answers) {
-            answer.setValue(answer.getValue().replace("[", "").replace("]", "")
-                    .replace(" ", ""));
+            answer.setValue(answer.getValue().replace("[", "").replace("]", "").trim());
             switch (answer.getAnswerIdJpa().getParameterId()) {
                 case VOMIT -> {
                     if (Integer.parseInt(answer.getValue()) >= 1) {
@@ -795,15 +795,14 @@ public class ModulesController {
                 }
                 case BM_TYPE -> {
                     for (DoctorParameterFillInJpa parameter : doctorParameters) {
-                        if (parameter.getId().getParameterId().equals(BM_TYPE)) {
+                        if (parameter.getId().getParameterId().equals(BM_TYPE_DOCTOR)) {
                             List<String> redFlagsBM = List.of(parameter.getValue()
                                     .replace("[", "")
                                     .replace("]", "")
-                                    .replace(" ", "")
                                     .split(","));
 
                             for (String redFlag : redFlagsBM) {
-                                if (answer.getValue().equals(redFlag)) {
+                                if (answer.getValue().trim().equals(redFlag)) {
                                     numberOfRedFlags += 1;
                                 }
                             }
@@ -812,21 +811,19 @@ public class ModulesController {
                 }
                 case BM_ADMIXTURE -> {
                     for (DoctorParameterFillInJpa parameter : doctorParameters) {
-                        if (parameter.getId().getParameterId().equals(BM_ADMIXTURE)) {
+                        if (parameter.getId().getParameterId().equals(BM_ADMIXTURE_DOCTOR)) {
                             List<String> redFlagsBMAdmixture = List.of(parameter.getValue()
                                     .replace("[", "")
                                     .replace("]", "")
-                                    .replace(" ", "")
                                     .split(","));
 
                             List<String> answerAdmixtures = List.of(answer.getValue()
                                     .replace("[", "")
                                     .replace("]", "")
-                                    .replace(" ", "")
                                     .split(","));
                             for (String redFlag : redFlagsBMAdmixture) {
                                 for (String answerAdmixture : answerAdmixtures) {
-                                    if (redFlag.equals(answerAdmixture)) {
+                                    if (redFlag.trim().equals(answerAdmixture.trim())) {
                                         numberOfRedFlags += 1;
                                     }
                                 }

@@ -33,8 +33,12 @@ public class NotificationController {
     @Autowired
     private MapStructMapper mapper;
 
-    @RequestMapping(path="/notifications/{userId}", method=RequestMethod.GET,
-            produces = "application/json;charset=UTF-8")
+    /**
+     * Получение всех уведомлений пользователя, отсортированные по дате и времени.
+     * @param userId id пользователя
+     * @return все уведомления пользователя
+     */
+    @GetMapping(path="/notifications/{userId}", produces = "application/json;charset=UTF-8")
     public List<Notification> getNotifications(@PathVariable String userId) {
         if (userId == null) {
             throw new ResponseStatusException(
@@ -45,6 +49,10 @@ public class NotificationController {
         return mapper.NotificationJpasToNotifications(notificationService.getNotificationsByUserId(userId));
     }
 
+    /**
+     * Уведомление пациентов о необходимости заполнить модуль при достижении нового срока заполнения.
+     * Отправляются каждый день в 9 часов.
+     */
     @Scheduled(cron = "0 0 9 * * *")
     public void notifyPatientAboutModule() {
         List<UserJpa> users = userService.findPatients();

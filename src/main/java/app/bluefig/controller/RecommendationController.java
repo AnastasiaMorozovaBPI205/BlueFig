@@ -6,6 +6,7 @@ import app.bluefig.model.Recommendation;
 import app.bluefig.service.NotificationServiceImpl;
 import app.bluefig.service.PatientHierarchyServiceImpl;
 import app.bluefig.service.RecommendationServiceImpl;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -40,7 +41,7 @@ public class RecommendationController {
         String doctorId = data.get("doctorId");
         String recommendation = data.get("recommendation");
 
-        if (patientId == null || doctorId == null || recommendation == null) {
+        if (ObjectUtils.anyNull(patientId, doctorId, recommendation)) {
             throw new ResponseStatusException(
                     HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Не заполнены поля."
             );
@@ -49,7 +50,8 @@ public class RecommendationController {
         recommendationService.addRecommendation(patientId, doctorId, LocalDateTime.now(), recommendation);
         patientHierarchyService.deletePatientFromHierarchyById(patientId);
         notificationService.addNotification(patientId, "У вас новая рекомендация от врача!", LocalDateTime.now());
-        System.out.println("recommendation added successfully");
+
+        System.out.println("Рекомендация успешно добавлена.");
     }
 
     /**
@@ -57,9 +59,14 @@ public class RecommendationController {
      * @param patientId пациента
      * @return список рекомендаций
      */
-    @RequestMapping(path="/recommendation/{patientId}", method=RequestMethod.GET,
-            produces = "application/json;charset=UTF-8")
+    @GetMapping(path="/recommendation/{patientId}", produces = "application/json;charset=UTF-8")
     public List<Recommendation> getRecommendationByPatient(@PathVariable String patientId) {
+        if (ObjectUtils.anyNull(patientId)) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Не заполнены поля."
+            );
+        }
+
         List<RecommendationJpa> recommendationJpas = recommendationService.findRecommendationJpaByPatient(patientId);
         return mapper.RecommendationJpasToRecommendations(recommendationJpas);
     }
@@ -69,10 +76,15 @@ public class RecommendationController {
      * @param patientId пациента
      * @return список рекомендаций
      */
-    @RequestMapping(path="/recommendation/{patientId}/{doctorId}", method=RequestMethod.GET,
-            produces = "application/json;charset=UTF-8")
+    @GetMapping(path="/recommendation/{patientId}/{doctorId}", produces = "application/json;charset=UTF-8")
     public List<Recommendation> getRecommendationByPatientDoctor(@PathVariable String patientId,
                                                            @PathVariable String doctorId) {
+        if (ObjectUtils.anyNull(patientId, doctorId)) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Не заполнены поля."
+            );
+        }
+
         List<RecommendationJpa> recommendationJpas = recommendationService.findRecommendationJpaByPatientDoctor(
                 patientId, doctorId);
         return mapper.RecommendationJpasToRecommendations(recommendationJpas);

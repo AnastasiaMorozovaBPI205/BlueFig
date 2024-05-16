@@ -6,6 +6,7 @@ import app.bluefig.entity.*;
 import app.bluefig.model.*;
 import app.bluefig.model.Questionary;
 import app.bluefig.service.*;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -24,93 +25,108 @@ public class ModulesController {
     private final String FORMULAS = "aa35f36a-de4f-11ee-8c0c-00f5f80cf8ae";
     private final String GASTRO_SYMPTOMS = "ab96ac6d-de4f-11ee-8c0c-00f5f80cf8ae";
 
-    final String MIXTURE_MASS = "75312e69-f9ee-11ee-88dc-00f5f80cf8ae";
-    final String FORMULA_NAME = "c67574a1-f8ec-11ee-88dc-00f5f80cf8ae";
-    final String PRODUCT_MASS = "7f1862d8-fe90-11ee-88dc-00f5f80cf8ae";
-    final String PRODUCT_NAME = "89e20095-fd15-11ee-88dc-00f5f80cf8ae";
-    final String WEIGHT = "7eb1c37f-cc4a-11ee-8c0c-00f5f80cf8ae";
-    final String HEIGHT = "80a45253-cc4a-11ee-8c0c-00f5f80cf8ae";
-    final String PERCENTAGE_DIFFERENCE = "31f92255-fa55-11ee-88dc-00f5f80cf8ae";
-    final String CONVERSION_COEFFICIENT = "f480a9de-fb3f-11ee-88dc-00f5f80cf8ae";
+    private final String MIXTURE_MASS = "75312e69-f9ee-11ee-88dc-00f5f80cf8ae";
+    private final String FORMULA_NAME = "c67574a1-f8ec-11ee-88dc-00f5f80cf8ae";
+    private final String PRODUCT_MASS = "7f1862d8-fe90-11ee-88dc-00f5f80cf8ae";
+    private final String PRODUCT_NAME = "89e20095-fd15-11ee-88dc-00f5f80cf8ae";
+    private final String WEIGHT = "7eb1c37f-cc4a-11ee-8c0c-00f5f80cf8ae";
+    private final String HEIGHT = "80a45253-cc4a-11ee-8c0c-00f5f80cf8ae";
+    private final String PERCENTAGE_DIFFERENCE = "31f92255-fa55-11ee-88dc-00f5f80cf8ae";
+    private final String CONVERSION_COEFFICIENT = "f480a9de-fb3f-11ee-88dc-00f5f80cf8ae";
 
     @Autowired
     private MapStructMapper mapper;
-
     @Autowired
     private UserServiceImpl userService;
-
     @Autowired
     private ProductServiceImpl productService;
-
     @Autowired
     private ParameterServiceImpl parameterService;
-
     @Autowired
     private FormulaServiceImpl formulaService;
-
     @Autowired
     private ProductGroupServiceImpl productGroupService;
-
     @Autowired
     private QuestionaryServiceImpl questionaryService;
-
     @Autowired
     private ModuleFillInServiceImpl moduleFillInService;
-
     @Autowired
     private QuestionaryAnswerServiceImpl questionaryAnswerService;
-
     @Autowired
     private GastroLabelServiceImpl gastroLabelService;
-
     @Autowired
     private ModuleServiceImpl moduleService;
-
     @Autowired
     NotificationServiceImpl notificationService;
-
     @Autowired
     DoctorParameterService doctorParameterService;
-
     @Autowired
     DoctorParameterLabelServiceImpl doctorParameterLabelService;
-
     @Autowired
     DoctorParameterFillInServiceImpl doctorParameterFillInService;
-
     @Autowired
     PatientHierarchyServiceImpl patientHierarchyService;
 
-    @RequestMapping(path="/parameters", method=RequestMethod.GET,
-            produces = "application/json;charset=UTF-8")
+    /**
+     * Получение модулей и их параметров.
+     * @return медицинские модули с параметрами
+     */
+    @GetMapping(path="/parameters", produces = "application/json;charset=UTF-8")
     public List<ModuleWithParametersDTO> getParameters() {
         return getAllModules();
     }
 
-    @RequestMapping(path="/doctorParameters/{moduleId}", method=RequestMethod.GET,
-            produces = "application/json;charset=UTF-8")
+    /**
+     * Получение параметров для выбора доктором в модуль пациенту.
+     * @param moduleId id модуля
+     * @return параметры для доктора
+     */
+    @GetMapping(path="/doctorParameters/{moduleId}", produces = "application/json;charset=UTF-8")
     public List<DoctorParameter> getDoctorParameters(@PathVariable String moduleId) {
-        return mapper.DoctorParametersJpaToDoctorParameters(doctorParameterService.findDoctorParameterJpasByModuleId(moduleId));
-    }
-
-    @RequestMapping(path="/doctorParametersLabels/{parameterId}", method=RequestMethod.GET,
-            produces = "application/json;charset=UTF-8")
-    public List<DoctorParameterLabel> getDoctorParameterLabels(@PathVariable String parameterId) {
-        return mapper.DoctorParameterLabelJpasToDoctorParameterLabels(doctorParameterLabelService.findDoctorParameterJpas(parameterId));
-    }
-
-    @RequestMapping(path="/questionary", method=RequestMethod.POST)
-    public void addQuestionary(@RequestBody HashMap<String, Object> data) {
-        String moduleId = data.get("moduleId").toString();
-        int frequency = Integer.parseInt(data.get("frequency").toString());
-        String patientId = data.get("patientId").toString();
-        String doctorId = data.get("doctorId").toString();
-
-        if (patientId == null || doctorId == null || data.get("frequency").toString() == null || moduleId == null) {
+        if (moduleId == null) {
             throw new ResponseStatusException(
                     HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Не заполнены поля."
             );
         }
+
+        return mapper.DoctorParametersJpaToDoctorParameters(doctorParameterService.
+                findDoctorParameterJpasByModuleId(moduleId));
+    }
+
+    /**
+     * Получение лейблов параметров для доктора.
+     * @param parameterId id параметра
+     * @return лейблы параметра
+     */
+    @GetMapping(path="/doctorParametersLabels/{parameterId}", produces = "application/json;charset=UTF-8")
+    public List<DoctorParameterLabel> getDoctorParameterLabels(@PathVariable String parameterId) {
+        if (parameterId == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Не заполнены поля."
+            );
+        }
+
+        return mapper.DoctorParameterLabelJpasToDoctorParameterLabels(doctorParameterLabelService.findDoctorParameterJpas(parameterId));
+    }
+
+    /**
+     * Добавление анкеты пациенту.
+     * @param data данные анкеты
+     */
+    @PostMapping(path="/questionary")
+    public void addQuestionary(@RequestBody HashMap<String, Object> data) {
+        String moduleId = data.get("moduleId").toString();
+        String patientId = data.get("patientId").toString();
+        String doctorId = data.get("doctorId").toString();
+
+        if (ObjectUtils.anyNull(patientId, doctorId, data.get("frequency").toString(), moduleId) ||
+                !data.get("frequency").toString().matches("\\d+")) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Не заполнены поля."
+            );
+        }
+
+        int frequency = Integer.parseInt(data.get("frequency").toString());
 
         UUID questionaryId = UUID.randomUUID();
 
@@ -126,9 +142,14 @@ public class ModulesController {
         }
 
         notificationService.addNotification(patientId, "Вам добавлен новый модуль к заполнению!", LocalDateTime.now());
-        System.out.println("questionary added successfully");
+
+        System.out.println("Анкета для заполнения пациентом успешно добавлена.");
     }
 
+    /**
+     * Удаление модуля у пациента.
+     * @param questionaryId id анкеты
+     */
     @DeleteMapping("/questionary/{questionaryId}")
     public void deleteQuestionary(@PathVariable String questionaryId) {
         if (questionaryId == null) {
@@ -138,11 +159,18 @@ public class ModulesController {
         }
 
         questionaryService.setQuestionaryInactive(questionaryId);
+
+        System.out.println("Анкета для заполнения пациентом удалена успешно.");
     }
 
+    /**
+     * Изменение частоты заполнения модуля.
+     * @param questionaryId id анкеты
+     * @param frequency частота
+     */
     @PutMapping("/questionary/{questionaryId}/{frequency}")
     public void changeQuestionaryFrequency(@PathVariable String questionaryId, @PathVariable String frequency) {
-        if (questionaryId == null || frequency == null) {
+        if (questionaryId == null || frequency == null || !frequency.matches("\\d+")) {
             throw new ResponseStatusException(
                     HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Не заполнены поля."
             );
@@ -153,10 +181,16 @@ public class ModulesController {
         notificationService.addNotification(questionaryJpa.getPatientId(),
                 "У модуля изменилась частота заполнения!", LocalDateTime.now());
 
+        System.out.println("Частота заполнения модуля успешно изменена.");
     }
 
-    @RequestMapping(path="/module/{patientId}/{doctorId}", method=RequestMethod.GET,
-            produces = "application/json;charset=UTF-8")
+    /**
+     * Получение всех модулей пациента.
+     * @param patientId id пациента
+     * @param doctorId id врача
+     * @return список модулей пациента
+     */
+    @GetMapping(path="/module/{patientId}/{doctorId}", produces = "application/json;charset=UTF-8")
     public List<ModuleWithParametersDTO> findModulesByPatientDoctorIds(@PathVariable String patientId,
                                                                        @PathVariable String doctorId) {
         if (patientId == null || doctorId == null) {
@@ -183,8 +217,12 @@ public class ModulesController {
         return modulesForPatient;
     }
 
-    @RequestMapping(path="/moduleParameters/{questionaryId}", method=RequestMethod.GET,
-            produces = "application/json;charset=UTF-8")
+    /**
+     * Получение заполненных параметров доктором для модуля.
+     * @param questionaryId id анкеты
+     * @return список параметров
+     */
+    @GetMapping(path="/moduleParameters/{questionaryId}", produces = "application/json;charset=UTF-8")
     public List<DoctorParameterFillIn> findModulesParametersByPatientDoctorIds(@PathVariable String questionaryId) {
         if (questionaryId == null) {
             throw new ResponseStatusException(
@@ -192,7 +230,8 @@ public class ModulesController {
             );
         }
 
-        List<DoctorParameterFillInJpa> list = doctorParameterFillInService.findDoctorParameterFillInJpas(questionaryId);
+        List<DoctorParameterFillInJpa> list = doctorParameterFillInService.
+                findDoctorParameterFillInJpas(questionaryId);
         List<DoctorParameterFillIn> listMapped = new ArrayList<>();
 
         for (DoctorParameterFillInJpa fillInJpa : list) {
@@ -207,8 +246,12 @@ public class ModulesController {
         return listMapped;
     }
 
-    @RequestMapping(path="/module/{patientId}", method=RequestMethod.GET,
-            produces = "application/json;charset=UTF-8")
+    /**
+     * Поиск всех модулей пациента.
+     * @param patientId id пациента
+     * @return список модулей пациента
+     */
+    @GetMapping(path="/module/{patientId}", produces = "application/json;charset=UTF-8")
     public List<ModuleWithParametersDTO> findModulesByPatientId(@PathVariable String patientId) {
         if (patientId == null) {
             throw new ResponseStatusException(
@@ -236,8 +279,12 @@ public class ModulesController {
         return modulesForPatient;
     }
 
-    @RequestMapping(path="/module/gastroLabel/{parameterId}", method=RequestMethod.GET,
-            produces = "application/json;charset=UTF-8")
+    /**
+     * Поиск всех лейблов гастро-параметров.
+     * @param parameterId id параметра
+     * @return список лейблов
+     */
+    @GetMapping(path="/module/gastroLabel/{parameterId}", produces = "application/json;charset=UTF-8")
     public List<GastroLabel> findGastroParameters(@PathVariable String parameterId) {
         if (parameterId == null) {
             throw new ResponseStatusException(
@@ -248,9 +295,13 @@ public class ModulesController {
         return mapper.GastroLabelJpasToGastroLabels(gastroLabelService.findGastroLabelByParameter(parameterId));
     }
 
+    /**
+     * Добавление заполненного модуля пациентом.
+     * @param data заполненный модуль
+     */
     @PostMapping(path = "/moduleFillIn", produces = "application/json;charset=UTF-8")
     public void addModuleFillIn(@RequestBody HashMap<String, Object> data) {
-        if (data.get("fillIn") == null || data.get("questionaryId") == null || data.get("datetime") == null) {
+        if (ObjectUtils.anyNull(data.get("fillIn"), data.get("questionaryId"), data.get("datetime"))) {
             throw new ResponseStatusException(
                     HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Не заполнены поля."
             );
@@ -278,17 +329,29 @@ public class ModulesController {
         LocalDateTime dateTime = LocalDateTime.parse(data.get("datetime").toString());
         UUID fillInId = UUID.randomUUID();
 
-        boolean isRedFillIn = changeNumberInHierarchy(answerJpas, questionaryId);
+        boolean isRedFillIn = false;
+        try {
+            isRedFillIn = changeNumberInHierarchy(answerJpas, questionaryId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         moduleFillInService.addModuleFillIn(fillInId.toString(), questionaryId, dateTime, isRedFillIn);
 
         for (QuestionaryAnswerJpa answerJpa : answerJpas) {
             questionaryAnswerService.addFieldAnswer(answerJpa.getValue(), String.valueOf(fillInId), answerJpa.getAnswerIdJpa().getParameterId());
         }
+
+        System.out.println("Заполнение модуля пациентом успешно добавлено.");
     }
 
-    @RequestMapping(path="/moduleFillIn/{patientId}/{doctorId}", method=RequestMethod.GET,
-            produces = "application/json;charset=UTF-8")
+    /**
+     * Получение всех заполненных модулей пациента.
+     * @param patientId id пациента
+     * @param doctorId id врача
+     * @return список заполненных модулей пациента
+     */
+    @GetMapping(path="/moduleFillIn/{patientId}/{doctorId}", produces = "application/json;charset=UTF-8")
     public List<ModuleWithParametersDTO> findModuleFillInsByPatientDoctorIds(@PathVariable String patientId,
                                                                               @PathVariable String doctorId) {
         if (patientId == null || doctorId == null) {
@@ -352,8 +415,12 @@ public class ModulesController {
         return patientsFillIns;
     }
 
-    @RequestMapping(path="/moduleFillIn/{patientId}", method=RequestMethod.GET,
-                    produces = "application/json;charset=UTF-8")
+    /**
+     * Получение всех заполненных модулей пациента.
+     * @param patientId id пациента
+     * @return список заполненных модулей пациента
+     */
+    @GetMapping(path="/moduleFillIn/{patientId}", produces = "application/json;charset=UTF-8")
     public List<ModuleWithParametersDTO> findModuleFillInsByPatientId(@PathVariable String patientId) {
         if (patientId == null) {
             throw new ResponseStatusException(
@@ -417,10 +484,20 @@ public class ModulesController {
         return patientsFillIns;
     }
 
-    @RequestMapping(path="/statistics/{moduleId}/{patientId}", method=RequestMethod.GET,
-            produces = "application/json;charset=UTF-8")
+    /**
+     * Получение статистики в виде координат графика.
+     * @param moduleId id модуля
+     * @param patientId id пациента
+     * @return статистика
+     */
+    @GetMapping(path="/statistics/{moduleId}/{patientId}", produces = "application/json;charset=UTF-8")
     public HashMap<String, LinkedHashMap<LocalDateTime, Object>> getStatistics(@PathVariable String moduleId,
-                                                                         @PathVariable String patientId) {
+                                                                                @PathVariable String patientId) {
+        if (patientId == null || moduleId == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Не заполнены поля."
+            );
+        }
         HashMap<String, LinkedHashMap<LocalDateTime, Object>> graphs = new HashMap<>();
 
         List<ModuleFillInJpa> fillIns = moduleFillInService.findModulesFillInJpaByPatientIdModuleId(moduleId, patientId);
@@ -443,33 +520,62 @@ public class ModulesController {
         return graphs;
     }
 
-    @RequestMapping(path="/formula", method=RequestMethod.GET,
-            produces = "application/json;charset=UTF-8")
+    /**
+     * Получение всех смесей для кормления.
+     * @return список смесей
+     */
+    @GetMapping(path="/formula", produces = "application/json;charset=UTF-8")
     public List<String> getFormulaNames() {
         return formulaService.findFormulaNames();
     }
 
-    @RequestMapping(path="/productGroup", method=RequestMethod.GET,
-            produces = "application/json;charset=UTF-8")
+    /**
+     * Получение всех групп продуктов.
+     * @return список групп продуктов
+     */
+    @GetMapping(path="/productGroup", produces = "application/json;charset=UTF-8")
     public List<ProductGroup> getProductGroups() {
         return mapper.ProductGroupJpasToProductGroups(productGroupService.findProductGroups());
     }
 
-    @RequestMapping(path="/products/{productGroupId}", method=RequestMethod.GET,
-            produces = "application/json;charset=UTF-8")
+    /**
+     * Получение продуктов конкретной группы.
+     * @param productGroupId id группы продуктов
+     * @return список продуктов
+     */
+    @GetMapping(path="/products/{productGroupId}", produces = "application/json;charset=UTF-8")
     public List<Product> getProducts(@PathVariable String productGroupId) {
+        if (productGroupId == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Не заполнены поля."
+            );
+        }
+
         return mapper.ProductJpasToProducts(productService.findProductsInGroup(productGroupId));
     }
 
-    @RequestMapping(path="/products", method=RequestMethod.GET,
-            produces = "application/json;charset=UTF-8")
+    /**
+     * Получение всех продуктов с данными о них.
+     * @return список продуктов
+     */
+    @GetMapping(path="/products", produces = "application/json;charset=UTF-8")
     public List<Product> getSortedProducts() {
         return mapper.ProductJpasToProducts(productService.findSortedProducts());
     }
 
-    @RequestMapping(path="/patientsHierarchy/{doctorId}", method=RequestMethod.GET,
-            produces = "application/json;charset=UTF-8")
+    /**
+     * Получение списка пациентов, ждущих ответа врача и отсортированных по приоритету.
+     * @param doctorId id врача
+     * @return список пациентов
+     */
+    @GetMapping(path="/patientsHierarchy/{doctorId}", produces = "application/json;charset=UTF-8")
     public List<User> getPatientsHierarchy(@PathVariable String doctorId) {
+        if (doctorId == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Не заполнены поля."
+            );
+        }
+
         return mapper.UserJpasToUsers(userService.findSortedPatientHierarchyJpas(doctorId));
     }
 

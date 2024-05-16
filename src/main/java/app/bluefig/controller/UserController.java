@@ -17,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -25,31 +26,22 @@ import java.util.List;
 public class UserController {
     @Autowired
     private UserServiceImpl userService;
-
     @Autowired
     NotificationServiceImpl notificationService;
-
     @Autowired
     private QuestionaryServiceImpl questionaryService;
-
     @Autowired
     private RecommendationServiceImpl recommendationService;
-
     @Autowired
     private PatientHierarchyServiceImpl patientHierarchyService;
-
     @Autowired
     private DoctorParameterFillInServiceImpl doctorParameterFillInService;
-
     @Autowired
     private ModuleFillInServiceImpl moduleFillInService;
-
     @Autowired
     private QuestionaryAnswerServiceImpl questionaryAnswerService;
-
     @Autowired
     private MapStructMapper mapper;
-
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -84,7 +76,8 @@ public class UserController {
 
         userService.addUserList(username, firstname, lastname, fathername, email, passwordEncoder.encode(password),
                 roleId, birthday, sex);
-        System.out.println("user added successfully");
+
+        System.out.println("Пользователь успешно добавлен.");
     }
 
     private LocalDate getDate(String dateStr) {
@@ -92,11 +85,15 @@ public class UserController {
             return null;
         }
 
-        if (dateStr.length() > 10) {
-            return LocalDate.parse(dateStr.substring(0, 10));
-        }
+        try {
+            if (dateStr.length() > 10) {
+                return LocalDate.parse(dateStr.substring(0, 10));
+            }
 
-        return LocalDate.parse(dateStr);
+            return LocalDate.parse(dateStr);
+        } catch (DateTimeParseException e) {
+            return null;
+        }
     }
 
     /**
@@ -124,8 +121,7 @@ public class UserController {
      * @param id пользователя
      * @return данные пользователя
      */
-    @RequestMapping(path="/user/{id}", method=RequestMethod.GET,
-            produces = "application/json;charset=UTF-8")
+    @GetMapping(path="/user/{id}", produces = "application/json;charset=UTF-8")
     public User getUserById(@PathVariable String id) {
         if (id == null) {
             throw new ResponseStatusException(
@@ -180,6 +176,8 @@ public class UserController {
         }
 
         userService.deleteUserJpa(id);
+
+        System.out.println("Удаление пользователя и всех его данных проведено успешно.");
     }
 
     /**
@@ -187,8 +185,7 @@ public class UserController {
      * @param doctorId врача
      * @return пациентов врача
      */
-    @RequestMapping(path="/patientsList/{doctorId}", method=RequestMethod.GET,
-            produces = "application/json;charset=UTF-8")
+    @GetMapping(path="/patientsList/{doctorId}", produces = "application/json;charset=UTF-8")
     public List<User> getDoctorsPatients(@PathVariable String doctorId) {
         if (doctorId == null) {
             throw new ResponseStatusException(
@@ -205,8 +202,7 @@ public class UserController {
      * @param patientId пациента
      * @return врачей пациента
      */
-    @RequestMapping(path="/doctorsList/{patientId}", method=RequestMethod.GET,
-            produces = "application/json;charset=UTF-8")
+    @GetMapping(path="/doctorsList/{patientId}", produces = "application/json;charset=UTF-8")
     public List<User> getPatientsDoctors(@PathVariable String patientId) {
         if (patientId == null) {
             throw new ResponseStatusException(
@@ -253,8 +249,7 @@ public class UserController {
      * Поиск всех пациентов.
      * @return пациенты
      */
-    @RequestMapping(path="/doctorsList", method=RequestMethod.GET,
-            produces = "application/json;charset=UTF-8")
+    @GetMapping(path="/doctorsList", produces = "application/json;charset=UTF-8")
     public List<User> getDoctors() {
         List<UserJpa> userJpas = userService.findDoctors();
         return mapper.UserJpasToUsers(userJpas);
@@ -264,8 +259,7 @@ public class UserController {
      * Поиск всех врачей.
      * @return врачи
      */
-    @RequestMapping(path="/patientsList", method=RequestMethod.GET,
-            produces = "application/json;charset=UTF-8")
+    @GetMapping(path="/patientsList", produces = "application/json;charset=UTF-8")
     public List<User> getPatients() {
         List<UserJpa> userJpas = userService.findPatients();
         return mapper.UserJpasToUsers(userJpas);
@@ -328,6 +322,8 @@ public class UserController {
         }
 
         userService.changeUser(user);
+
+        System.out.println("Данные о пользователе успешно изменены.");
     }
 
     /**
@@ -335,6 +331,12 @@ public class UserController {
      */
     @GetMapping(path="/user/find/{lastname}/{roleId}", produces = "application/json;charset=UTF-8")
     public List<User> findUserByLastname(@PathVariable String lastname, @PathVariable String roleId) {
+        if (lastname == null || roleId == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Не заполнены поля."
+            );
+        }
+
         return mapper.UserJpasToUsers(userService.findUsersByLastname(lastname, roleId));
     }
 }

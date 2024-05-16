@@ -4,7 +4,7 @@ import app.bluefig.controller.NotificationController;
 import app.bluefig.entity.NotificationJpa;
 import app.bluefig.mapper.MapStructMapper;
 import app.bluefig.model.Notification;
-import app.bluefig.service.NotificationServiceImpl;
+import app.bluefig.service.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +27,14 @@ public class NotificationTest {
     private MockMvc mockMvc;
     @MockBean
     private NotificationServiceImpl service;
+    @MockBean
+    private UserServiceImpl userService;
+    @MockBean
+    private QuestionaryServiceImpl questionaryService;
+    @MockBean
+    private ModuleFillInServiceImpl moduleFillInService;
+    @MockBean
+    private ModuleServiceImpl moduleService;
     @MockBean
     private MapStructMapper mapper;
 

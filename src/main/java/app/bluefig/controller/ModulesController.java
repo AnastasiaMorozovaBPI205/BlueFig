@@ -787,6 +787,10 @@ public class ModulesController {
         int age = Period.between(patient.getBirthday(), LocalDate.now()).getYears();
 
         List<QuestionaryAnswerJpa> lastAnthropometryAnswer = getLastAnthropometryAnswer(patientId);
+        if (lastAnthropometryAnswer == null || lastAnthropometryAnswer.isEmpty()) {
+            return 0;
+        }
+
         int weight = 0;
         int height = 0;
         for (QuestionaryAnswerJpa answer : lastAnthropometryAnswer) {

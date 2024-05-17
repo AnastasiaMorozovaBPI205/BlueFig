@@ -586,6 +586,8 @@ public class ModulesController {
         String patientId = questionary.getPatientId();
         String moduleId = questionary.getModuleId();
 
+        UserJpa patient = userService.findUserJpaById(patientId);
+
         boolean isFeedbackTypeAutomatic = true;
         List<DoctorParameterFillInJpa> doctorParameterFillInJpas = doctorParameterFillInService
                 .findDoctorParameterFillInJpas(questionaryId);
@@ -613,6 +615,9 @@ public class ModulesController {
             } else {
                 patientHierarchyService.changePatientNumber(patientId, number);
             }
+            notificationService.addNotification(questionary.getDoctorId(),
+                    "Пациент " + patient.getLastname() + " " + patient.getFirstname() + " ждет вашей обратной связи!",
+                    LocalDateTime.now());
 
             return true;
         }
